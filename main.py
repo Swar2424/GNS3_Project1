@@ -5,6 +5,7 @@ with open('config.json', 'r', encoding='utf-8') as fichier:
     
 a = 0
 
+a = 16
 
 
 
