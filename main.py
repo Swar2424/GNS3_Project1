@@ -1,10 +1,15 @@
 import json 
 
-with open('config.json', 'r', encoding='utf-8') as fichier:
-    donnees_lues = json.load(fichier)
+with open('config.json', 'r', encoding='utf-8') as file:
+    donnees_lues = json.load(file)
+    
+with open('template.txt', 'r', encoding='utf-8') as file:
+    template = file.read()
+    file.close()
     
 AS_dic = list(donnees_lues.values())[0]
 
+write = {}
 
 def ASout(address):
     if address != "NULL" :
@@ -14,11 +19,15 @@ def ASout(address):
     
 for AS in AS_dic.values() :
     for Router in AS["Routeurs"].values() :
+        name = f"i{Router['n°']}"
+        temp = template
         if ASout(Router['GigabitEthernet 2/0']) :
             a=0
+        write[name] = temp
+            
         
         
-
-f = open("i1_startup-config.cfg", "w")
-f.write("!\n! bgp area 11")
-f.close()
+for key, val in write.items() :
+    f = open(f"{key}_startup-config.cfg", "w")
+    f.write(val)
+    f.close()
