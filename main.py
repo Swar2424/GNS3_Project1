@@ -10,6 +10,8 @@ with open('template.txt', 'r', encoding='utf-8') as file:
 AS_dic = list(donnees_lues.values())[0]
 
 write = {}
+networks = {}
+
 
 def ASout(address):
     if address != "NULL" :
@@ -19,11 +21,11 @@ def ASout(address):
     
 for AS in AS_dic.values() :
     for Router in AS["Routeurs"].values() :
-        name = f"i{Router['n°']}"
+        name = f"{Router}"
         temp = template
         if ASout(Router['GigabitEthernet 2/0']) :
             a=0
-        write[name] = temp
+        write["i" + name] = temp
             
         
         
