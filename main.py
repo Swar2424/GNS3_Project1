@@ -103,11 +103,31 @@ for Router in dict_info :
 
         
         
-            
-        
+
+def remplace(temp, router):
+    dict_info[f"{router}"]={'GigabitEthernet1/0': ['2001:1:1:1::1/64'], 'GigabitEthernet2/0': ['2001:1:1:2::1/64'], 'IGP': ["RIP"], 'AS': ["111"], 'neighbor': [["2001:1:1:1::2/64",111],["2001:1:1:2::2/64",112]], 'network': ['2001:1:1:1::/64','2001:1:1:2::/64']}
+    print(dict_info[f"{router}"])
+
+    IP_addressGe1_0= dict_info[f'{router}']['GigabitEthernet1/0'][0]
+    IP_addressGe2_0= dict_info[f'{router}']['GigabitEthernet2/0'][0]
+    numAS = dict_info[f'{router}']['AS'][0]
     
+    
+    config = template.split("[GigabitEthernet1/0]")[0]+ f"ipv6 address {IP_addressGe1_0}\n" +" ipv6 enable\n" +" ipv6 rip 2 enable\n" + template.split("[GigabitEthernet1/0]")[1]
+    
+    config = config.split("[GigabitEthernet2/0]")[0]+ f"ipv6 address {IP_addressGe2_0}\n" +" ipv6 enable\n" +" ipv6 rip 2 enable\n" + config.split("[GigabitEthernet2/0]")[1]
+    
+    config = config.split("[AS]")[0]+ f"{numAS}\n" +f" bgp router-id {router}.{router}.{router}.{router}" + config.split("[AS]")[1]
+    
+    config = config.split("[neighbor]")[0] + f"neighbor {dict_info[f'{router}']['neighbor'][0][0]} remote-as {dict_info[f'{router}']['neighbor'][0][1]}\n" + f" neighbor {dict_info[f'{router}']['neighbor'][1][0]} remote-as {dict_info[f'{router}']['neighbor'][1][1]}\n" + config.split("[neighbor]")[1]
+    print(config)
+    #config = config.split("[network]")[0] + 
+
+
+remplace(template, 1)
+
+
 for key, val in write.items() :
     f = open(f"{key}_startup-config.cfg", "w")
     f.write(val)
     f.close()
-
