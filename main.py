@@ -1,5 +1,6 @@
 import json 
 
+
 with open('config_2.json', 'r', encoding='utf-8') as file:
     donnees_lues = json.load(file)
     

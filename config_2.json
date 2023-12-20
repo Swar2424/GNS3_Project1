@@ -3,8 +3,10 @@
         "As_1": {
             "n°" : 1,
             "IGP" : "RIP",
+
             "Routers" : [1,2,3],
             "Networks" : {
+
                 "2001:1:1:1::/64" : {
                     "1" : "GigabitEthernet 1/0",
                     "2" : "GigabitEthernet 1/0"
@@ -19,8 +21,10 @@
         "As_2": {
             "n°" : 2,
             "IGP" : "OSPF",
+          
             "Routers" : [4,5,6],
             "Networks" : {
+
                 "2001:1:2:1::/64" : {
                     "4" : "GigabitEthernet 1/0",
                     "5" : "GigabitEthernet 1/0"
