@@ -87,7 +87,7 @@ for Router in dict_info :
     for Router_peer in AS_dic[f"As_{dict_info[Router]['AS'][0]}"]["Routers"] :
         
         if f"{Router_peer}" != Router :
-            dict_info[Router]["neighbor"].append([dict_info[f"{Router_peer}"]["GigabitEthernet1/0"], dict_info[Router]["AS"][0]])
+            dict_info[Router]["neighbor"].append([dict_info[f"{Router_peer}"]["GigabitEthernet1/0"][0], dict_info[Router]["AS"][0]])
         
     for network in Inter_AS.values() :
         
@@ -96,16 +96,12 @@ for Router in dict_info :
             for Router_peer in network.keys() :
                 
                 if Router_peer != Router :
-                    dict_info[Router]["neighbor"].append([dict_info[Router_peer]["GigabitEthernet1/0"], network[Router_peer][1]])
-      
-        
-    print(Router, dict_info[Router])
+                    dict_info[Router]["neighbor"].append([dict_info[Router_peer]["GigabitEthernet1/0"][0], network[Router_peer][1]])
 
         
         
 
 def remplace(temp, router):
-    dict_info[f"{router}"]={'GigabitEthernet1/0': ['2001:1:1:1::1/64'], 'GigabitEthernet2/0': ['2001:1:1:2::1/64'], 'IGP': ["RIP"], 'AS': ["111"], 'neighbor': [["2001:1:1:1::2/64",111],["2001:1:1:2::2/64",112]], 'network': ['2001:1:1:1::/64','2001:1:1:2::/64']}
     print(dict_info[f"{router}"])
 
     IP_addressGe1_0= dict_info[f'{router}']['GigabitEthernet1/0'][0]
@@ -121,13 +117,15 @@ def remplace(temp, router):
     
     config = config.split("[neighbor]")[0] + f"neighbor {dict_info[f'{router}']['neighbor'][0][0]} remote-as {dict_info[f'{router}']['neighbor'][0][1]}\n" + f" neighbor {dict_info[f'{router}']['neighbor'][1][0]} remote-as {dict_info[f'{router}']['neighbor'][1][1]}\n" + config.split("[neighbor]")[1]
     print(config)
+    return(config)
     #config = config.split("[network]")[0] + 
 
 
-remplace(template, 1)
 
+write["2"] = remplace(template, 2)
 
 for key, val in write.items() :
-    f = open(f"{key}_startup-config.cfg", "w")
+    print(key)
+    f = open(f"i{key}_startup-config.cfg", "w")
     f.write(val)
     f.close()
