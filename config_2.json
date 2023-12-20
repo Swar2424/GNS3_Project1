@@ -37,8 +37,8 @@
 
     "Inter-AS" : {
             "2001:2:1:1::/64" : {
-                "3" : "GigabitEthernet 2/0",
-                "4" : "GigabitEthernet 2/0"
+                "3" : ["GigabitEthernet2/0", 1],
+                "4" : ["GigabitEthernet2/0", 2]
         }
     }
     
