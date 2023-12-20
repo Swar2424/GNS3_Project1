@@ -4,18 +4,21 @@
             "n°" : 1,
             "IGP" : "RIP",
             "Routeurs" : {
-                "1" : {
+                "R1" : {
+                    "n°":1,
                     "GigabitEthernet 1/0":"2001:1:1:1::1/64",
                     "GigabitEthernet 2/0":"NULL"
 
                     },
-                "2" : {
+                "R2" : {
+                    "n°":2,
                     "GigabitEthernet 1/0":"2001:1:1:1::2/64",
                     "GigabitEthernet 2/0":"2001:1:1:2::1/64"
                         
                     
                 },
-                "3" : {
+                "R3" : {
+                    "n°":3,
                     "GigabitEthernet 1/0":"2001:1:1:2::2/64",
                     "GigabitEthernet 2/0":"2001:2:1:1::1/64" 
                 }
@@ -25,15 +28,18 @@
             "n°" : 2,
             "IGP" : "OSPF",
             "Routeurs" : {
-                "4" : {
+                "R4" : {
+                    "n°":4,
                     "GigabitEthernet 1/0":"2001:1:2:1::1/64",
                     "GigabitEthernet 2/0":"2001:2:1:1::2/64"
                     },
-                "5" : {
+                "R5" : {
+                    "n°":5,
                     "GigabitEthernet 1/0":"2001:1:2:1::2/64",
                     "GigabitEthernet 2/0":"2001:1:2:2::1/64"
                 },
-                "6" : {
+                "R6" : {
+                    "n°":6,
                     "GigabitEthernet 1/0":"2001:1:2:2::2/64",
                     "GigabitEthernet 2/0":"NULL"
                 }

@@ -1,7 +1,7 @@
 !
 
 !
-! Last configuration change at 15:43:26 UTC Tue Dec 19 2023
+! Last configuration change at 15:37:37 UTC Tue Dec 19 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -56,23 +56,32 @@ interface FastEthernet0/0
 interface GigabitEthernet1/0
  no ip address
  negotiation auto
- [G1/0]
+ ipv6 address 2001:1:2:2::1/64
+ ipv6 enable
+ ipv6 rip 2 enable
 !
 interface GigabitEthernet2/0
  no ip address
  negotiation auto
- [G2/0]
+ ipv6 address 2001:1:2:1::1/64
+ ipv6 enable
+ ipv6 rip 2 enable
 !
-router bgp [AS]
+router bgp 112
+ bgp router-id 5.5.5.5
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- [neighbor]
+ neighbor 2001:1:2:1::2 remote-as 112
+ neighbor 2001:1:2:2::2 remote-as 112
  !
  address-family ipv4
  exit-address-family
  !
  address-family ipv6
-  [network]
+  network 2001:1:2:1::/64
+  network 2001:1:2:2::/64
+  neighbor 2001:1:2:1::2 activate
+  neighbor 2001:1:2:2::2 activate
  exit-address-family
 !
 ip forward-protocol nd
@@ -81,7 +90,8 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ipv6 router [IGP]
+ipv6 router rip 2
+ redistribute connected
 !
 !
 !
