@@ -1,0 +1,107 @@
+!
+
+!
+! Last configuration change at 17:44:33 UTC Thu Dec 21 2023
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+ip cef
+!
+!
+!
+!
+!
+!
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ no ip address
+ ipv6 enable
+ [Loopback0]
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface GigabitEthernet1/0
+ no ip address
+ negotiation auto
+ ipv6 enable
+ [GigabitEthernet1/0]
+!
+interface GigabitEthernet2/0
+ no ip address
+ negotiation auto
+ ipv6 enable
+ [GigabitEthernet2/0]
+!
+router bgp [AS]
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ [neighbor]
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+  [network]
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 router [IGP]
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+!
+end
