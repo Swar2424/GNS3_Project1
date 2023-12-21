@@ -1,11 +1,5 @@
 import json 
 
-def ASout(address):
-    if address != "NULL" :
-        return (address.split(":")[1] == "2")
-    else :
-        return False
-
 def copy_dict(name):
     return {
     "GigabitEthernet1/0" : [],
@@ -23,10 +17,11 @@ def addressing(network, router): #network est une chaine de caractères et route
         
     else: #le sous-réseau est déjà une entrée dans le dico networks donc il y a déjà au moins une addresse prise dans ce sous réseau
         nombre_elem= len(networks[network].keys()) #on compte le nombre d'addresses déjà prises
-        if nombre_elem>255: #on vérifie qu'il n'y a pas plus de 255 addresses dans notre sous-réseau 
+        if nombre_elem>65534: #on vérifie qu'il n'y a pas plus de 65534 addresses dans notre sous-réseau 
             return "err"
         else:
-            address = network.split("/")[0]+ f"{nombre_elem+1}" + "/" + network.split("/")[1]
+            print(nombre_elem)
+            address = network.split("/")[0]+ f"{hex(nombre_elem + 1).split('x')[1]}" + "/" + network.split("/")[1]
 
     networks[network][router]=address
     return address 
@@ -102,7 +97,6 @@ for Router in dict_info :
         
 
 def remplace(temp, router):
-    print(dict_info[f"{router}"])
 
     IP_addressGe1_0= dict_info[f'{router}']['GigabitEthernet1/0'][0]
     IP_addressGe2_0= dict_info[f'{router}']['GigabitEthernet2/0'][0]
@@ -120,12 +114,9 @@ def remplace(temp, router):
     return(config)
     #config = config.split("[network]")[0] + 
 
-
-
-write["2"] = remplace(template, 2)
+write["3"] = remplace(template, 4)
 
 for key, val in write.items() :
-    print(key)
     f = open(f"i{key}_startup-config.cfg", "w")
     f.write(val)
     f.close()
