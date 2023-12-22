@@ -50,24 +50,21 @@ multilink bundle-name authenticated
 !
 interface Loopback0
  no ip address
- ipv6 enable
  [Loopback0]
 !
 interface FastEthernet0/0
  no ip address
- shutdown
  duplex full
+ [FastEthernet0/0]
 !
 interface GigabitEthernet1/0
  no ip address
  negotiation auto
- ipv6 enable
  [GigabitEthernet1/0]
 !
 interface GigabitEthernet2/0
  no ip address
  negotiation auto
- ipv6 enable
  [GigabitEthernet2/0]
 !
 router bgp [AS]
