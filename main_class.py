@@ -79,7 +79,7 @@ class Config() :
                     for Router_peer in network_dic.keys() :
                         
                         if Router_peer != Router :
-                            self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer][self.dict_info[Router]["eBGP_interface"]], network_dic[Router_peer][1]])
+                            self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer][self.dict_info[Router_peer]["eBGP_interface"]], network_dic[Router_peer][1]])
                         
                
                             
@@ -198,6 +198,10 @@ class Config() :
                    
             
             
-config = Config('config_2.json', "template_loop.txt")
+config = Config('config_3.json', "template_loop.txt")
 config.build_data()
 config.write_files()
+
+print(config.dict_info["6"]["eBGP_interface"])
+print(config.dict_info["6"]["GigabitEthernet2/0"])
+print(config.dict_info["9"]["neighbor"])
