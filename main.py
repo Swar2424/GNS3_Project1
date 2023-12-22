@@ -87,7 +87,7 @@ def remplace(temp, router):
         if neighbor_list[0][:9] == "10:10:10:" :
             char += f"neighbor {neighbor_tronque} update-source Loopback0\n "
     char = char[:len(char)-2]
-    char_activate = char_activate
+    char_activate = char_activate[:len(char_activate)-1]
     
     config = config.split("[neighbor]")[0] + char + config.split("[neighbor]")[1]
     
