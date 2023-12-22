@@ -43,8 +43,8 @@ def remplace(temp, router):
     
     #Sélection de l'IGP
     if dict_info[f'{router}']['IGP'] == "RIP" :
-        process = "rip 200"
-        config = config.split("[IGP]")[0] + process + "\n redistribute connected" + config.split("[IGP]")[1]
+        process = "rip 200 enable"
+        config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
     else :
         process = f"ospf 100 area {numAS}"
         char_temp = ""
@@ -54,22 +54,22 @@ def remplace(temp, router):
     
     #Attributions des adresses sur les interfaces
     if IP_addressGe1_0 != [] :
-        config = config.split("[GigabitEthernet1/0]")[0] + f"ipv6 address {IP_addressGe1_0}\n" + " ipv6 enable\n" + f" ipv6 {process} enable" + config.split("[GigabitEthernet1/0]")[1]
+        config = config.split("[GigabitEthernet1/0]")[0] + f"ipv6 address {IP_addressGe1_0}\n" + " ipv6 enable\n" + f" ipv6 {process}" + config.split("[GigabitEthernet1/0]")[1]
     else :
         config = config.split("[GigabitEthernet1/0]")[0] + "shutdown" + config.split("[GigabitEthernet1/0]")[1]
         
     if IP_addressGe2_0 != [] :    
-        config = config.split("[GigabitEthernet2/0]")[0] + f"ipv6 address {IP_addressGe2_0}\n" +" ipv6 enable\n" + f" ipv6 {process} enable" + config.split("[GigabitEthernet2/0]")[1]
+        config = config.split("[GigabitEthernet2/0]")[0] + f"ipv6 address {IP_addressGe2_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[GigabitEthernet2/0]")[1]
     else :
         config = config.split("[GigabitEthernet2/0]")[0] + "shutdown" + config.split("[GigabitEthernet2/0]")[1]
     
     if IP_addressFa0_0 != [] :
-        config = config.split("[FastEthernet0/0]")[0] + f"ipv6 address {IP_addressFa0_0}\n" +" ipv6 enable\n" + f" ipv6 {process} enable" + config.split("[FastEthernet0/0]")[1]
+        config = config.split("[FastEthernet0/0]")[0] + f"ipv6 address {IP_addressFa0_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[FastEthernet0/0]")[1]
     else :
         config = config.split("[FastEthernet0/0]")[0] + "shutdown" + config.split("[FastEthernet0/0]")[1]
         
     if IP_addressLoo_0 != [] :
-        config = config.split("[Loopback0]")[0] + f"ipv6 address {IP_addressLoo_0}\n" +" ipv6 enable\n" + f" ipv6 {process} enable" + config.split("[Loopback0]")[1]
+        config = config.split("[Loopback0]")[0] + f"ipv6 address {IP_addressLoo_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[Loopback0]")[1]
     else :  
         config = config.split("[Loopback0]")[0] + "shutdown" + config.split("[Loopback0]")[1]
         
