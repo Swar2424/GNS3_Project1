@@ -109,7 +109,7 @@ def remplace(temp, router):
 
 
 
-with open('config_2.json', 'r', encoding='utf-8') as file:
+with open('config_3.json', 'r', encoding='utf-8') as file:
     donnees_lues = json.load(file)
     
 with open('template_loop.txt', 'r', encoding='utf-8') as file:
