@@ -13,7 +13,6 @@
                     "2" : "GigabitEthernet2/0",
                     "3" : "GigabitEthernet1/0"
                 }
-
             }
         },
         "As_2": {
@@ -29,17 +28,23 @@
                     "5" : "GigabitEthernet2/0",
                     "6" : "GigabitEthernet1/0"
                 }
-
             }
-
         }
     },
 
     "Inter-AS" : {
-            "2001:2:1:1::/64" : {
-                "3" : ["GigabitEthernet2/0", 1],
-                "4" : ["GigabitEthernet2/0", 2]
+        "2001:2:1:1::/64" : {
+            "3" : ["GigabitEthernet2/0", 1],
+            "4" : ["GigabitEthernet2/0", 2]
         }
+    },
+
+    "Paths" : {
+        "1" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/5d3ed3e8-5936-4033-bb4e-73d31dc4e678/configs",
+        "2" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/f2d1b1e7-f0c8-4739-98b1-6d7df156cc38/configs",
+        "3" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/589b0866-eeb1-4ce4-9f10-e038aadf987f/configs",
+        "4" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/b153e885-fc8f-44f2-b444-b276d8dfc7d4/configs",
+        "5" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/3ceff36b-ad14-47d5-a956-69086bf1eb46/configs",
+        "6" : "C:/Users/felix/GNS3/projects/GNS3_Project21_test/project-files/dynamips/2dbbd491-40a5-4f91-8a6b-67c82033262e/configs"
     }
-    
 }

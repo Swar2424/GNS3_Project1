@@ -13,6 +13,7 @@ class Config() :
         
         self.AS_dic = list(donnees_lues.values())[0]
         self.Inter_AS = list(donnees_lues.values())[1]
+        self.path = list(donnees_lues.values())[2]
         self.networks = {}
         self.dict_info = {}
         
@@ -191,10 +192,10 @@ class Config() :
         
     def write_files(self) :
         for Router in self.dict_info.keys() :
-            f = open(f"./TEST/i{Router}_startup-config.cfg", "w")
+            f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
             f.write(self.write_config(self.template, int(Router)))
             f.close()
-            
+                   
             
             
 config = Config('config_2.json', "template_loop.txt")
