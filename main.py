@@ -50,7 +50,7 @@ def remplace(temp, router):
         char_temp = ""
         if dict_info[f'{router}']['eBGP_interface'] != [] :
             char_temp = f"\n passive-interface {dict_info[f'{router}']['eBGP_interface']}"
-        config = config.split("[IGP]")[0] + process + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + config.split("[IGP]")[1]
+        config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + config.split("[IGP]")[1]
     
     #Attributions des adresses sur les interfaces
     if IP_addressGe1_0 != [] :
