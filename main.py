@@ -78,16 +78,27 @@ def remplace(temp, router):
     
     #Attribution des neighbors
     char = ""
+    char_activate = ""
     for neighbor_list in dict_info[f'{router}']['neighbor'] :
-        char += f"neighbor {neighbor_list[0]} remote-as {neighbor_list[1]}\n "
-        
+        neighbor_tronque = neighbor_list[0].split("/")[0]
+        print(f"le tronq donne {neighbor_tronque}")
+        char += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
+        char_activate += f"  neighbor {neighbor_tronque} activate\n"
         if neighbor_list[0][:9] == "10:10:10:" :
-            char += f"neighbor {neighbor_list[0]} update-source Loopback0\n "
+            char += f"neighbor {neighbor_tronque} update-source Loopback0\n "
     char = char[:len(char)-2]
+    char_activate = char_activate
     
     config = config.split("[neighbor]")[0] + char + config.split("[neighbor]")[1]
     
     #Attribution des networks
+    char_net = ""
+    for network in dict_info[f'{router}']['network']:
+        char_net += f"  network {network}\n"
+        
+    char_net = char_net[2:]
+    config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
+
         
     print(config)
     return(config)
@@ -173,7 +184,7 @@ for Router in dict_info.keys() :
                 if Router_peer != Router :
                     dict_info[Router]["neighbor"].append([dict_info[Router_peer][dict_info[Router]["eBGP_interface"]], network_dic[Router_peer][1]])
 
-#remplace(template, 4)
+remplace(template, 4)
 
 
 #Écriture des configs
