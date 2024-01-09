@@ -67,6 +67,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
+[route]
 ipv6 router [IGP]
 !
 !
