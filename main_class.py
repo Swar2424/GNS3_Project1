@@ -35,7 +35,7 @@ class Config() :
                         address = self.addressing(network_name, Router)
                         
                         if address != "err" :
-                            info[network_dic[name]] = (address)
+                            info["Interfaces"][network_dic[name]] = (address)
                             
                         else :
                             print(f"Too much address in {network_name}") 
@@ -48,10 +48,12 @@ class Config() :
                 info["AS"] = [AS["n°"], Router]
                 address = self.addressing(f"10:10:10:{hex(Router).split('x')[1]}::/64", Router)
                 if address != "err" :
-                    info["Loopback0"] = address
+                    info["Interfaces"]["Loopback0"] = address
+                    
                 if Router == AS["advertise_net"][0]:    
                     info["network"].append(AS["advertise_net"][1]) 
                     print(Router)                   
+          
                 self.dict_info[name] = info
 
 
@@ -65,7 +67,7 @@ class Config() :
                 address = self.addressing(network_name, Router)
                 
                 if address != "err" :
-                    self.dict_info[Router][network_dic[Router][0]] = address
+                    self.dict_info[Router]["Interfaces"][network_dic[Router][0]] = address
                     self.dict_info[Router]["eBGP_interface"] = network_dic[Router][0]
                     
                 else :
@@ -79,7 +81,7 @@ class Config() :
             for Router_peer in self.AS_dic[f"As_{self.dict_info[Router]['AS'][0]}"]["Routers"] :
                 
                 if f"{Router_peer}" != Router :
-                    self.dict_info[Router]["neighbor"].append([self.dict_info[f"{Router_peer}"]["Loopback0"], self.dict_info[Router]["AS"][0]])
+                    self.dict_info[Router]["neighbor"].append([self.dict_info[f"{Router_peer}"]["Interfaces"]["Loopback0"], self.dict_info[Router]["AS"][0]])
                 
             for network_name, network_dic in self.Inter_AS.items() :
                 
@@ -88,17 +90,15 @@ class Config() :
                     for Router_peer in network_dic.keys() :
                         
                         if Router_peer != Router :
-                            self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer][self.dict_info[Router_peer]["eBGP_interface"]], network_dic[Router_peer][1]])
+                            self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer]["Interfaces"][self.dict_info[Router_peer]["eBGP_interface"]], network_dic[Router_peer][1]])
                         
                
                             
     def write_config(self, temp, router):
 
         #Initialisation des variables
-        IP_addressGe1_0= self.dict_info[f'{router}']['GigabitEthernet1/0']
-        IP_addressGe2_0= self.dict_info[f'{router}']['GigabitEthernet2/0']
-        IP_addressLoo_0= self.dict_info[f'{router}']['Loopback0']
-        IP_addressFa0_0= self.dict_info[f'{router}']['FastEthernet0/0']
+        IP_addresses = self.dict_info[f'{router}']['Interfaces']
+
         numAS = self.dict_info[f'{router}']['AS'][0]
         config = temp
         
@@ -114,26 +114,22 @@ class Config() :
             config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + config.split("[IGP]")[1]
         
         #Attributions des adresses sur les interfaces
-        if IP_addressGe1_0 != [] :
-            config = config.split("[GigabitEthernet1/0]")[0] + f"ipv6 address {IP_addressGe1_0}\n" + " ipv6 enable\n" + f" ipv6 {process}" + config.split("[GigabitEthernet1/0]")[1]
-        else :
-            config = config.split("[GigabitEthernet1/0]")[0] + "shutdown" + config.split("[GigabitEthernet1/0]")[1]
+        interfaces_txt = ""
+        for Interface, Address in IP_addresses.items() :
             
-        if IP_addressGe2_0 != [] :    
-            config = config.split("[GigabitEthernet2/0]")[0] + f"ipv6 address {IP_addressGe2_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[GigabitEthernet2/0]")[1]
-        else :
-            config = config.split("[GigabitEthernet2/0]")[0] + "shutdown" + config.split("[GigabitEthernet2/0]")[1]
+            if "Gigabit" in Interface :
+                Special = "\n negotiation auto"
+            elif "Fast" in Interface :
+                Special = "\n duplex full"
+            else :
+                Special = ""
+                
+            if ((Interface == self.dict_info[f'{router}']['eBGP_interface']) and (self.dict_info[f'{router}']['IGP'] == "RIP")) :
+                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
+            else :
+                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
         
-        if IP_addressFa0_0 != [] :
-            config = config.split("[FastEthernet0/0]")[0] + f"ipv6 address {IP_addressFa0_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[FastEthernet0/0]")[1]
-        else :
-            config = config.split("[FastEthernet0/0]")[0] + "shutdown" + config.split("[FastEthernet0/0]")[1]
-            
-        if IP_addressLoo_0 != [] :
-            config = config.split("[Loopback0]")[0] + f"ipv6 address {IP_addressLoo_0}\n" +" ipv6 enable\n" + f" ipv6 {process}" + config.split("[Loopback0]")[1]
-        else :  
-            config = config.split("[Loopback0]")[0] + "shutdown" + config.split("[Loopback0]")[1]
-            
+        config = config.split("[Interfaces]\n")[0] + interfaces_txt + config.split("[Interfaces]\n")[1]
         config = config.split("[AS]")[0] + f"{numAS}\n" + f" bgp router-id {router}.{router}.{router}.{router}" + config.split("[AS]")[1]
         
         
@@ -194,10 +190,8 @@ class Config() :
     
     def copy_dict(self):
         return {
-        "Loopback0" : [],
-        "FastEthernet0/0" : [],
-        "GigabitEthernet1/0" : [],
-        "GigabitEthernet2/0" : [],
+        "Interfaces" : {
+        },
         "IGP" : [],
         "AS" : [],
         "neighbor" : [],
