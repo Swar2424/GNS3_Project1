@@ -22,7 +22,9 @@ class Config() :
     def build_data(self) :    
         #Création des adresses iBGP  
         for AS in self.AS_dic.values() :
+
             
+
             for Router in AS["Routers"] :          
                 name = f"{Router}"
                 info = self.copy_dict()
@@ -36,9 +38,11 @@ class Config() :
                             info["Interfaces"][network_dic[name]] = (address)
                             
                         else :
-                            print(f"Too much address in {network_name}")
-                            
-                    info["network"].append(network_name)
+                            print(f"Too much address in {network_name}") 
+
+
+            
+            
                     
                 info["IGP"] = AS["IGP"]
                 info["AS"] = [AS["n°"], Router]
@@ -46,7 +50,14 @@ class Config() :
                 if address != "err" :
                     info["Interfaces"]["Loopback0"] = address
                     
+                if Router == AS["advertise_net"][0]:    
+                    info["network"].append(AS["advertise_net"][1]) 
+                    print(Router)                   
+          
                 self.dict_info[name] = info
+
+
+            
 
 
         #Création des adresses eBGP  
@@ -127,7 +138,6 @@ class Config() :
         char_activate = ""
         for neighbor_list in self.dict_info[f'{router}']['neighbor'] :
             neighbor_tronque = neighbor_list[0].split("/")[0]
-            print(f"le tronq donne {neighbor_tronque}")
             char += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
             char_activate += f"  neighbor {neighbor_tronque} activate\n"
             if neighbor_list[0][:9] == "10:10:10:" :
@@ -139,14 +149,23 @@ class Config() :
         
         #Attribution des networks
         char_net = ""
-        for network in self.dict_info[f'{router}']['network']:
-            char_net += f"  network {network}\n"
+        
+        if self.dict_info[f'{router}']['network'] != [] :
+            print(self.dict_info[f'{router}']['network'])
+            for network in self.dict_info[f'{router}']['network']:
+                char_net += f"  network {network}\n"
+       
+        #for network in self.dict_info[f'{router}']['network']:
+        #    char_net += f"  network {network}\n"
             
-        char_net = char_net[2:]
-        config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
+            char_net = char_net[2:]
+            config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
 
+        else:
+
+            config = config.split("  [network]")[0]+ char_activate +config.split("  [network]")[1]
             
-        print(config)
+        #sprint(config)
         return(config)
     
     
@@ -184,9 +203,10 @@ class Config() :
         
     def write_files(self) :
         for Router in self.dict_info.keys() :
-            f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
-            f.write(self.write_config(self.template, int(Router)))
-            f.close()
+            a = self.write_config(self.template, int(Router))
+    #        f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
+    #        f.write(self.write_config(self.template, int(Router)))
+    #        f.close()
                    
             
             
