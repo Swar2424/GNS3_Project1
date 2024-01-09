@@ -40,6 +40,14 @@
                 "2001:1:1:9::/64" : {
                     "7" : "FastEthernet0/0",
                     "6" : "FastEthernet0/0"
+                },
+                "2001:1:1:10::/64" : {
+                    "5" : "GigabitEthernet3/0",
+                    "7" : "GigabitEthernet3/0"
+                },
+                "2001:1:1:11::/64" : {
+                    "4" : "GigabitEthernet3/0",
+                    "6" : "GigabitEthernet3/0"
                 }
 
             }
@@ -84,6 +92,14 @@
                 "2001:1:2:9::/64" : {
                     "8" : "FastEthernet0/0",
                     "9" : "FastEthernet0/0"
+                },
+                "2001:1:2:10::/64" : {
+                    "9" : "GigabitEthernet3/0",
+                    "10" : "GigabitEthernet3/0"
+                },
+                "2001:1:2:11::/64" : {
+                    "8" : "GigabitEthernet3/0",
+                    "11" : "GigabitEthernet3/0"
                 }
             }
 
