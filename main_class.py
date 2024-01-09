@@ -98,7 +98,7 @@ class Config() :
             process = "rip 200 enable"
             config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
         else :
-            process = f"ospf 100 area {numAS}"
+            process = f"ospf 100 area 0"
             char_temp = ""
             if self.dict_info[f'{router}']['eBGP_interface'] != [] :
                 char_temp = f"\n passive-interface {self.dict_info[f'{router}']['eBGP_interface']}"
@@ -201,7 +201,3 @@ class Config() :
 config = Config('config_3.json', "template_loop.txt")
 config.build_data()
 config.write_files()
-
-print(config.dict_info["6"]["eBGP_interface"])
-print(config.dict_info["6"]["GigabitEthernet2/0"])
-print(config.dict_info["9"]["neighbor"])
