@@ -63,6 +63,7 @@ router bgp [AS]
 !
 ip forward-protocol nd
 !
+[community]
 !
 no ip http server
 no ip http secure-server
@@ -70,6 +71,7 @@ no ip http secure-server
 [route]
 ipv6 router [IGP]
 !
+[route-map]
 !
 !
 !
