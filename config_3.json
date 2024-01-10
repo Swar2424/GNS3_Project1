@@ -112,12 +112,12 @@
 
     "Inter-AS" : {
         "2001:2:1:1::/64" : {
-            "7" : ["GigabitEthernet2/0", 1],
-            "8" : ["GigabitEthernet1/0", 2]
+            "7" : ["GigabitEthernet2/0", 1, "2001:2:1:1::1/64"],
+            "8" : ["GigabitEthernet1/0", 2, "2001:2:1:1::2/64"]
         },
         "2001:2:1:2::/64" : {
-            "6" : ["GigabitEthernet2/0", 1],
-            "9" : ["GigabitEthernet1/0",2]
+            "6" : ["GigabitEthernet2/0", 1, "2001:2:1:2::1/64"],
+            "9" : ["GigabitEthernet1/0",2, "2001:2:1:2::2/64"]
         }
     },
     

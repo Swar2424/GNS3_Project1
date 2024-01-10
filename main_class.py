@@ -57,15 +57,8 @@ class Config() :
         for network_name, network_dic in self.Inter_AS.items() :
 
             for Router, Connect in network_dic.items() :
-                address = self.addressing(network_name, Router)
-                
-                if address != "err" :
-                    self.dict_info[Router]["Interfaces"][Connect[0]] = address
-                    self.dict_info[Router]["eBGP_interface"] = Connect[0]
-                    
-                else :
-                    print(f"Too much address in {network_name}")
-                    
+                self.dict_info[Router]["Interfaces"][Connect[0]] = Connect[2]
+                self.dict_info[Router]["eBGP_interface"] = Connect[0]
                 self.dict_info[Router]["network"].append(self.AS_dic[f"As_{Connect[1]}"]["Prefix"][1])
 
         #Récupération des neighbors
