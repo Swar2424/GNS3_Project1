@@ -91,9 +91,11 @@ class Config() :
         #Sélection de l'IGP
         if self.dict_info[f'{router}']['IGP'] == "RIP" :
             process = "rip 200 enable"
+            config = config.split("[OSPFband]")[0] + config.split("[OSPFband]")[1]
             config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
         else :
             process = f"ospf 100 area 0"
+            config = config.split("[OSPFband]")[0] + (f'router ospf {router} \n  auto-cost reference-bandwidth {self.AS_dic["As_2"]["Metricref"]}' + config.split("[OSPFband]")[1])
             char_temp = ""
             if self.dict_info[f'{router}']['eBGP_interface'] != [] :
                 char_temp = f"\n passive-interface {self.dict_info[f'{router}']['eBGP_interface']}"
@@ -104,16 +106,19 @@ class Config() :
         for Interface, Address in IP_addresses.items() :
             
             if "Gigabit" in Interface :
-                Special = "\n negotiation auto"
+                    Special = "\n negotiation auto"
+                    BandW = "1000000"
+                
             elif "Fast" in Interface :
-                Special = "\n duplex full"
+                    Special = "\n duplex full"
+                    BandW = "100000"
             else :
                 Special = ""
                 
             if ((Interface == self.dict_info[f'{router}']['eBGP_interface']) and (self.dict_info[f'{router}']['IGP'] == "RIP")) :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
             else :
-                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
+                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n bandwidth {BandW} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
         
         config = config.split("[Interfaces]\n")[0] + interfaces_txt + config.split("[Interfaces]\n")[1]
         config = config.split("[AS]")[0] + f"{numAS}\n" + f" bgp router-id {router}.{router}.{router}.{router}" + config.split("[AS]")[1]
@@ -155,7 +160,7 @@ class Config() :
             config = config.split("  [network]")[0] + char_activate + config.split("  [network]")[1]
             config = config.split("\n[route]")[0] + config.split("\n[route]")[1]
             
-        print(config)
+        #print(config)
         return(config)
     
     
@@ -194,6 +199,7 @@ class Config() :
     def write_files(self) :
         for Router in self.dict_info.keys() :
             f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
+            
             f.write(self.write_config(self.template, int(Router)))
             f.close()
                    
