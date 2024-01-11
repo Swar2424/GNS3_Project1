@@ -1,4 +1,5 @@
 import json 
+import telnetlib
 
 
 class Config() :
@@ -79,8 +80,10 @@ class Config() :
                             self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer]["Interfaces"][self.dict_info[Router_peer]["eBGP_interface"]], network_dic[Router_peer][1]])
                         
                
-                            
+                           
     def write_config(self, temp, router):
+
+
 
         #Initialisation des variables
         IP_addresses = self.dict_info[f'{router}']['Interfaces']
@@ -212,7 +215,49 @@ class Config() :
             f.write(self.write_config(self.template, int(Router)))
             f.close()
                    
+    def Telnet(self):
+        for Router, dico in self.dict_info.items() :
+            telnet_connexion = telnetlib.Telnet("localhost",port) #ajouter le port dans le dico
+            if dico["IGP"] == "RIP":
+                #config rip
+                telnet_connexion.write(b,"enable")
+                telnet_connexion.write(b,"configure terminal")
+                telnet_connexion.write(b,"ipv6 unicast-routing")
+                for interface, address in dico["Interfaces"].items():
+                    telnet_connexion.write(b,"interface {interface}")
+                    telnet_connexion.write(b,"ipv6 enable")
+                    telnet_connexion.write(b,"ipv6 address {address}")
+                    telnet_connexion.write(b,"no shutdown")
+                    telnet_connexion.write(b,"ipv6 router rip ripprocess")
+                    telnet_connexion.write(b,"redistribute connected")
+                    telnet_connexion.write(b,"exit")
+                    telnet_connexion.write(b,"interface {interface}")
+                    telnet_connexion.write(b,"ipv6 rip ripprocess enable")
+            if dico["IGP"] == "OSPF":
+                #config ospf
+                telnet_connexion.write(b,"enable")
+                telnet_connexion.write(b,"configure terminal")
+                telnet_connexion.write(b,"ipv6 router ospf {Router}")   
+                telnet_connexion.write(b,"router-id {Router}.{Router}.{Router}.{Router}")   
+                telnet_connexion.write(b,"exit")
+                for interface, address in dico["Interfaces"].items():
+                    telnet_connexion.write(b,"interface {interface}")
+                    telnet_connexion.write(b,"ipv6 ospf {Router} area 0")       
             
+            telnet_connexion.write("test")    
+
+
+#            if AS["IGP"]=="RIP":
+#                for router in AS["Routeurs"]:
+#                    telnet_connexion = telnetlib.Telnet("localhost",port)
+#                    telnet_connexion.write("test")
+                    
+#            if AS["IGP"]=="OSPF":
+#                for router in AS["Routeurs"]:
+#                    telnet_connexion = telnetlib.Telnet("localhost",port)
+#                    telnet_connexion.write("test")
+        
+
             
 config = Config('config_3.json', "template_loop.txt")
 config.build_data()
