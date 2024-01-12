@@ -26,8 +26,10 @@ class Config() :
 
             
 
-            for Router in AS["Routers"] :          
+            for list in AS["Routers"] :   
+                Router = list[0]       
                 name = f"{Router}"
+                
                 info = self.copy_dict()
                 
                 for network_name, network_dic in AS["Networks"].items() : 
@@ -44,6 +46,7 @@ class Config() :
                     
                 info["IGP"] = AS["IGP"]
                 info["AS"] = [AS["n°"], Router]
+                info["Port"]=list[1]
                 address = self.addressing(f"10:10:10:{hex(Router).split('x')[1]}::/64", Router)
                 if address != "err" :
                     info["Interfaces"]["Loopback0"] = address                 
@@ -203,7 +206,8 @@ class Config() :
         "AS" : [],
         "neighbor" : [],
         "network" : [],
-        "eBGP_interface" : []
+        "eBGP_interface" : [],
+        "Port" : []
         }
         
        
@@ -217,7 +221,7 @@ class Config() :
                    
     def Telnet(self):
         for Router, dico in self.dict_info.items() :
-            telnet_connexion = telnetlib.Telnet("localhost",port) #ajouter le port dans le dico
+            telnet_connexion = telnetlib.Telnet("localhost",dico["port"]) #ajouter le port dans le dico
             if dico["IGP"] == "RIP":
                 #config rip
                 telnet_connexion.write(b,"enable")
