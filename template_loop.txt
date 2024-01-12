@@ -61,6 +61,7 @@ router bgp [AS]
   [network]
  exit-address-family
 !
+!
 ip forward-protocol nd
 !
 [community]
