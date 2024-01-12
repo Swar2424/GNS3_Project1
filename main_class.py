@@ -58,7 +58,7 @@ class Config() :
 
             for Router, Connect in network_dic.items() :
                 self.dict_info[Router]["Interfaces"][Connect[0]] = Connect[2]
-                self.dict_info[Router]["eBGP_interface"] = Connect[0]
+                self.dict_info[Router]["eBGP_interface"] = Connect[0] 
                 self.dict_info[Router]["network"].append(self.AS_dic[f"As_{Connect[1]}"]["Prefix"])
 
         #Récupération des neighbors
@@ -76,8 +76,7 @@ class Config() :
                     for Router_peer in network_dic.keys() :
                         
                         if Router_peer != Router :
-                            self.dict_info[Router]["neighbor"].append([self.dict_info[Router_peer]["Interfaces"][self.dict_info[Router_peer]["eBGP_interface"]], network_dic[Router_peer][1]])
-                            print(Router, Router_peer, network_name, self.dict_info[Router_peer]["Interfaces"][self.dict_info[Router_peer]["eBGP_interface"]])
+                            self.dict_info[Router]["neighbor"].append([network_dic[Router_peer][2], network_dic[Router_peer][1]])
                             
     def write_config(self, temp, router):
 
@@ -125,7 +124,6 @@ class Config() :
             neighbor_tronque = neighbor_list[0].split("/")[0]
             char += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
             char_activate += f"  neighbor {neighbor_tronque} activate\n"
-            print(router, neighbor_list)
             if neighbor_list[0][:9] == "10:10:10:" :
                 char += f"neighbor {neighbor_tronque} update-source Loopback0\n "
             """
@@ -147,7 +145,7 @@ class Config() :
             As = self.Inter_AS[network_inter_as][f'{router}'][1]
             weight = self.Inter_AS[network_inter_as][f'{router}'][4]
             
-            char_net = f"  network {network} route-map community-map-out\n"
+            char_net = f"  network {network}\n" #route-map community-map-out
             char_route = f"\nipv6 route {network} Null0"
             char_community = f"\nip bgp-community new-format\nip community-list 1 permit 1:{As_remote + 5}"
             char_route_map = f"\nroute-map community-map permit 100\n match community 1\n set weight {weight}\n!\n"
@@ -212,6 +210,6 @@ class Config() :
                    
             
             
-config = Config('config_4.json', "template_loop.txt")
+config = Config('config_3.json', "template_loop.txt")
 config.build_data()
 config.write_files()
