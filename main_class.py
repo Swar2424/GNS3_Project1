@@ -19,12 +19,12 @@ class Config() :
         
         
         
-    def build_data(self) :    
+    def build_data(self) :  
+          
         #Création des adresses iBGP  
         for AS in self.AS_dic.values() :
 
             
-
             for Router in AS["Routers"] :          
                 name = f"{Router}"
                 info = self.copy_dict()
@@ -50,9 +50,6 @@ class Config() :
                 self.dict_info[name] = info
 
 
-            
-
-
         #Création des adresses eBGP  
         for network_name, network_dic in self.Inter_AS.items() :
 
@@ -60,6 +57,7 @@ class Config() :
                 self.dict_info[Router]["Interfaces"][Connect[0]] = Connect[2]
                 self.dict_info[Router]["eBGP_interface"] = Connect[0] 
                 self.dict_info[Router]["network"].append(self.AS_dic[f"As_{Connect[1]}"]["Prefix"])
+
 
         #Récupération des neighbors
         for Router in self.dict_info.keys() :
@@ -76,7 +74,9 @@ class Config() :
                     for Router_peer in network_dic.keys() :
                         
                         if Router_peer != Router :
-                            self.dict_info[Router]["neighbor"].append([network_dic[Router_peer][2], network_dic[Router_peer][1]])
+                            self.dict_info[Router]["neighbor"].append([network_dic[Router_peer][2], network_dic[Router_peer][1], network_dic[Router][4], Router_peer])
+                      
+                      
                             
     def write_config(self, temp, router):
 
@@ -86,6 +86,7 @@ class Config() :
         numAS = self.dict_info[f'{router}']['AS'][0]
         config = temp
         
+        
         #Sélection de l'IGP
         if self.dict_info[f'{router}']['IGP'] == "RIP" :
             process = "rip 200 enable"
@@ -94,9 +95,10 @@ class Config() :
             process = f"ospf 100 area 0"
             char_metric = f'\n auto-cost reference-bandwidth {self.AS_dic["As_2"]["Metricref"]}'
             char_temp = ""
-            if self.dict_info[f'{router}']['eBGP_interface'] != [] :
-                char_temp = f"\n passive-interface {self.dict_info[f'{router}']['eBGP_interface']}"
+            for interface in self.dict_info[f'{router}']['eBGP_interface']  :
+                char_temp = f"\n passive-interface {interface}"
             config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + char_metric + config.split("[IGP]")[1]
+        
         
         #Attributions des adresses sur les interfaces
         interfaces_txt = ""
@@ -111,7 +113,7 @@ class Config() :
             else :
                 Special = ""
                 
-            if ((Interface == self.dict_info[f'{router}']['eBGP_interface']) and (self.dict_info[f'{router}']['IGP'] == "RIP")) :
+            if ((Interface not in self.dict_info[f'{router}']['eBGP_interface']) or (self.dict_info[f'{router}']['IGP'] == "RIP")) :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
             else :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n bandwidth {BandW} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
@@ -121,53 +123,60 @@ class Config() :
         
         
         #Attribution des neighbors
-        char = ""
+        char_neighbor = ""
         char_activate = ""
+        char_community = ""
+        char_route_map = ""
+        if self.dict_info[f'{router}']['eBGP_interface'] != [] :
+            char_community += "\nip community-list 1 permit 10\nip community-list 1 permit 20\nip community-list 1 permit 30"
+            char_community += "\nip community-list 2 permit 10\nip community-list 2 deny 20\nip community-list 2 deny 30"
+            char_community += "\nip community-list 3 permit 10\nip community-list 3 deny 20\nip community-list 3 deny 30"
+            char_route_map += "\nroute-map Client-map-out permit 100\n match community 1\n!"
+            char_route_map += "\nroute-map Peer-map-out permit 100\n match community 2\n!"
+            char_route_map += "\nroute-map Provider-map-out permit 100\n match community 3\n!"
+            char_route_map += "\nroute-map Client-map permit 100\n set community 10\n!"
+            char_route_map += "\nroute-map Peer-map permit 100\n set community 20\n!"
+            char_route_map += "\nroute-map Provider-map permit 100\n set community 30\n!"
+        
         for neighbor_list in self.dict_info[f'{router}']['neighbor'] :
             neighbor_tronque = neighbor_list[0].split("/")[0]
-            char += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
+            char_neighbor += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
             char_activate += f"  neighbor {neighbor_tronque} activate\n"
-            if neighbor_list[0][:9] == "10:10:10:" :
-                char += f"neighbor {neighbor_tronque} update-source Loopback0\n "
-            """
-            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :
-                char_activate += f"  neighbor {neighbor_tronque} route-map community-map in\n"
-                char_activate += f"  neighbor {neighbor_tronque} send-community\n"
-            """
             
-        char = char[:len(char)-2]
+            if neighbor_list[0][:9] == "10:10:10:" :
+                char_neighbor += f"neighbor {neighbor_tronque} update-source Loopback0\n "
+            
+            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :
+                Type = neighbor_list[2]
+       
+                char_activate += f"  neighbor {neighbor_tronque} route-map {Type}-map in\n"
+                char_activate += f"  neighbor {neighbor_tronque} route-map {Type}-map-out out\n"
+                char_activate += f"  neighbor {neighbor_tronque} send-community\n"
+                    
+                
+
+        char_neighbor = char_neighbor[:len(char_neighbor)-2]
         char_activate = char_activate[:len(char_activate)-1]
         
-        config = config.split("[neighbor]")[0] + char + config.split("[neighbor]")[1]
+        config = config.split("[neighbor]")[0] + char_neighbor + config.split("[neighbor]")[1]
+        config = config.split("\n[route-map]")[0] + char_route_map + config.split("\n[route-map]")[1]
+        config = config.split("\n[community]")[0] + char_community + config.split("\n[community]")[1]
+        
         
         #Attribution des networks        
         if self.dict_info[f'{router}']['network'] != [] :        
             network = self.dict_info[f'{router}']['network'][0]
-            network_inter_as = (self.dict_info[f'{router}']["Interfaces"][self.dict_info[f'{router}']['eBGP_interface']]).split('::')[0] + "::/64"
-            As_remote = self.Inter_AS[network_inter_as][f'{router}'][3]
-            As = self.Inter_AS[network_inter_as][f'{router}'][1]
-            weight = self.Inter_AS[network_inter_as][f'{router}'][4]
             
-            char_net = f"  network {network}\n" #route-map community-map-out
+            char_net = f"  network {network} route-map Client-map\n"
             char_route = f"\nipv6 route {network} Null0"
-            char_community = f"\nip bgp-community new-format\nip community-list 1 permit 1:{As_remote + 5}"
-            char_route_map = f"\nroute-map community-map permit 100\n match community 1\n set weight {weight}\n!\n"
-            char_route_map += f"route-map community-map-out permit 100\n set community 1:{As + 5}\n!"
             
             char_net = char_net[2:]
             config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
             config = config.split("\n[route]")[0] + char_route +  config.split("\n[route]")[1]
-            #config = config.split("\n[route-map]")[0] + char_route_map + config.split("\n[route-map]")[1]
-            #config = config.split("\n[community]")[0] + char_community + config.split("\n[community]")[1]
-            config = config.split("\n[route-map]")[0] + config.split("\n[route-map]")[1]
-            config = config.split("\n[community]")[0] + config.split("\n[community]")[1]
             
         else:
-
             config = config.split("  [network]")[0] + char_activate + config.split("  [network]")[1]
             config = config.split("\n[route]")[0] + config.split("\n[route]")[1]
-            config = config.split("\n[route-map]")[0] + config.split("\n[route-map]")[1]
-            config = config.split("\n[community]")[0] + config.split("\n[community]")[1]
             
         #print(config)
         return(config)
