@@ -15,7 +15,7 @@
         "As_2": {
             "Prefix" : "2001:100:200::/48",
             "n°" : 2,
-            "IGP" : "RIP",
+            "IGP" : "OSPF",
             "Metricref" : 1000,
             "Routers" : [2,9],
             "Networks" : {
