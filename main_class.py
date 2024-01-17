@@ -113,7 +113,7 @@ class Config() :
             else :
                 Special = ""
                 
-            if self.dict_info[f'{router}']['IGP'] == "RIP" :
+            if self.dict_info[f'{router}']['IGP'] == "RIP" and Interface in self.dict_info[f'{router}']["eBGP_interface"] :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
             else :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n bandwidth {BandW} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
@@ -168,8 +168,8 @@ class Config() :
         if self.dict_info[f'{router}']['network'] != [] :        
             network = self.dict_info[f'{router}']['network'][0]
             
-            char_net = f"  network {network} route-map Client-map\n"                                                                     #
-            char_route = f"\nipv6 route {network} Null0"                                                    #
+            char_net = f"  network {network} route-map Client-map\n"
+            char_route = f"\nipv6 route {network} Null0"
             
             char_net = char_net[2:]
             config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
