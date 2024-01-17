@@ -193,7 +193,6 @@ class Config() :
             config = config.split("  [network]")[0] + char_activate + config.split("  [network]")[1]
             config = config.split("\n[route]")[0] + config.split("\n[route]")[1]
             
-        #print(config)
         return(config)
     
     
@@ -232,262 +231,257 @@ class Config() :
         
     def write_files(self) :
         for Router in self.dict_info.keys() :
-            f = open(f"./TEST/i{Router}_startup-config.cfg", "w")
+            f = open(f"./cfg files/i{Router}_startup-config.cfg", "w")
             
             f.write(self.write_config(self.template, int(Router)))
 
             f.close()
                    
+                   
+                   
     def Telnet(self):
+        
         for Router, dico in self.dict_info.items() :
             telnet_connexion = telnetlib.Telnet("localhost",dico["Port"]) #ajouter le port dans le dico
+            
             if dico["IGP"] == "RIP":
                 #config rip
-                
+    
                 telnet_connexion.write(b"enable\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"configure terminal\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ipv6 unicast-routing\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
+                
                 for interface, address in dico["Interfaces"].items():
                     telnet_connexion.write(bytes(f"interface {interface}\r\n", "utf-8"))
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(b"ipv6 enable\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"ipv6 address {address}\r\n", "utf-8"))
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(b"no shutdown\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
+                    
                     if interface not in dico["eBGP_interface"]:
                         telnet_connexion.write(b"ipv6 router rip ripprocess\r\n")
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                         telnet_connexion.write(b"redistribute connected\r\n")
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                     telnet_connexion.write(b"exit\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
+                    
                     if interface not in dico["eBGP_interface"]:
                         telnet_connexion.write(bytes(f"interface {interface}\r\n","utf-8"))
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                         telnet_connexion.write(b"ipv6 rip ripprocess enable\r\n")
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                         telnet_connexion.write(b"exit\r\n")
-                        time.sleep(0.01)
-                telnet_connexion.write(b"end\r\n")       
+                        time.sleep(0.05)
+                telnet_connexion.write(b"end\r\n")
 
             if dico["IGP"] == "OSPF":
                 #config ospf
                 
                 telnet_connexion.write(b"enable\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"configure terminal\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ipv6 unicast-routing\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(bytes(f"ipv6 router ospf {Router}\r\n","utf-8"))   
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(bytes(f"router-id {Router}.{Router}.{Router}.{Router}\r\n", "utf-8"))  
-                time.sleep(0.01) 
+                time.sleep(0.05) 
                 telnet_connexion.write(b"auto-cost reference-bandwidth 1000\r\n")
-                time.sleep(0.01)
-
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
+                
                 for interface, address in dico["Interfaces"].items():
                     telnet_connexion.write(bytes(f"interface {interface}\r\n", "utf-8"))
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(b"ipv6 enable\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"ipv6 address {address}\r\n", "utf-8"))
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(b"no shutdown\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"ipv6 ospf {Router} area 0\r\n","utf-8"))   
-                    time.sleep(0.01) 
+                    time.sleep(0.05) 
                     if "Gigabit" in interface:
-
                         telnet_connexion.write(b"bandwidth 1000000\r\n")
-                        time.sleep(0.01)
+                        time.sleep(0.05)
+                        
                     elif "Fast" in interface:
                         telnet_connexion.write(b"bandwidth 100000\r\n")
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                     
                     telnet_connexion.write(b"exit\r\n")
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     
-
                     if interface in dico["eBGP_interface"]:
                         telnet_connexion.write(bytes(f"ipv6 router ospf {Router}\r\n","utf-8"))   
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                         telnet_connexion.write(bytes(f"passive-interface {interface}\r\n","utf-8"))
-                        time.sleep(0.01)
+                        time.sleep(0.05)
                         
                 telnet_connexion.write(b"end\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
             
             telnet_connexion.write(b"conf t\r\n")   
-            time.sleep(0.01)
+            time.sleep(0.05)
             telnet_connexion.write(bytes(f"router bgp {dico['AS'][0]}\r\n","utf-8"))
-            time.sleep(0.01)
+            time.sleep(0.05)
             telnet_connexion.write(b"no bgp default ipv4-unicast\r\n")
-            time.sleep(0.01)
+            time.sleep(0.05)
             telnet_connexion.write(bytes(f"bgp router-id {Router}.{Router}.{Router}.{Router}\r\n","utf-8")) 
-            time.sleep(0.01)
+            time.sleep(0.05)
+            
             for list_neighbor in dico["neighbor"]:
                 neighbor_address = list_neighbor[0]
                 neighbor_AS = list_neighbor[1]
-                print(neighbor_address, neighbor_AS, dico["AS"])
                 telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} remote-as {neighbor_AS}\r\n","utf-8")) 
-                time.sleep(0.01)
+                time.sleep(0.05)
+                
                 if dico["AS"][0]==neighbor_AS:
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} update-source Loopback0\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
 
                 telnet_connexion.write(b"address-family ipv6 unicast\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} activate\r\n","utf-8")) 
-                time.sleep(0.01)
+                time.sleep(0.05)
                 
                 if dico["AS"][0]!=neighbor_AS:
                     Type = list_neighbor[2]
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map {Type}-map in\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map {Type}-map-out out\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} send-community\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     
                 elif dico['eBGP_interface'] != [] :
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map iBGP-map in\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map iBGP-map-out out\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} send-community\r\n","utf-8")) 
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                 
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 
             if dico["network"] != []:
                 net = dico["network"][0]
                 telnet_connexion.write(b"address-family ipv6 unicast\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(bytes(f"network {net} route-map Client-map\r\n","utf-8")) 
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"end\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"conf t\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(bytes(f"ipv6 route {net} Null0\r\n", 'utf-8'))
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"end\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"config t\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 
+                #création des routes-map et des communities
                 telnet_connexion.write(b"ip community-list 1 permit 10\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 1 permit 20\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 1 permit 30\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 2 permit 10\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 2 deny 20\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 2 deny 30\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 3 permit 10\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 3 deny 20\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 3 deny 30\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Client-map-out permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 1\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Peer-map-out permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 2\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Provider-map-out permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 3\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map iBGP-map-out permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 1\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Client-map permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set community 10\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 400\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Peer-map permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set community 20\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 300\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map Provider-map permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set community 30\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 200\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map iBGP-map permit 100\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 1\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 400\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map iBGP-map permit 200\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 2\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 300\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"route-map iBGP-map permit 300\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"match community 3\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 telnet_connexion.write(b"set local-preference 200\r\n")
-                time.sleep(0.01)
+                time.sleep(0.05)
                 
-          
             if telnet_connexion:
                 telnet_connexion.close()
-            #config BGP
+
                  
-
-
-#            if AS["IGP"]=="RIP":
-#                for router in AS["Routeurs"]:
-#                    telnet_connexion = telnetlib.Telnet("localhost",port)
-#                    telnet_connexion.write("test")
-                    
-#            if AS["IGP"]=="OSPF":
-#                for router in AS["Routeurs"]:
-#                    telnet_connexion = telnetlib.Telnet("localhost",port)
-#                    telnet_connexion.write("test")
         
-
-            
-config = Config('config_3_copy.json', "template_loop.txt")
+     
+config = Config('config_5.json', "template_loop.txt")
 config.build_data()
 config.write_files()
 config.Telnet()
