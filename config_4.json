@@ -1,0 +1,127 @@
+{
+    "AS_dic": {
+        "As_1": {
+            "Prefix" : "2001:100:100::/48",
+            "n°" : 1,
+            "IGP" : "RIP",
+            "Routers" : [1],
+            "Networks" : {
+                "2001:100:100:1::/64" : {
+                    "1" : "GigabitEthernet3/0"
+                }
+            }
+        },
+        "As_2": {
+            "Prefix" : "2001:100:200::/48",
+            "n°" : 2,
+            "IGP" : "RIP",
+            "Routers" : [2],
+            "Networks" : {
+                "2001:100:200:1::/64" : {
+                    "2" : "GigabitEthernet3/0"
+                }
+            }
+        },
+        "As_3": {
+            "Prefix" : "2001:100:300::/48",
+            "n°" : 3,
+            "IGP" : "RIP",
+            "Routers" : [3],
+            "Networks" : {
+                "2001:100:300:1::/64" : {
+                    "3" : "GigabitEthernet3/0"
+                }
+            }
+        },
+        "As_4": {
+            "Prefix" : "2001:100:400::/48",
+            "n°" : 4,
+            "IGP" : "RIP",
+            "Routers" : [4],
+            "Networks" : {
+                "2001:100:400:1::/64" : {
+                    "4" : "GigabitEthernet3/0"
+                }
+            }
+        },
+        "As_5": {
+            "Prefix" : "2001:100:500::/48",
+            "n°" : 5,
+            "IGP" : "RIP",
+            "Routers" : [5,6,7],
+            "Networks" : {
+                "2001:100:500:1::/64" : {
+                    "5" : "GigabitEthernet2/0",
+                    "6" : "GigabitEthernet2/0"
+                },
+                "2001:100:500:2::/64" : {
+                    "6" : "GigabitEthernet1/0",
+                    "7" : "GigabitEthernet1/0"
+                }
+            }
+
+        },
+        "As_6": {
+            "Prefix" : "2001:100:600::/48",
+            "n°" : 6,
+            "IGP" : "OSPF",
+            "Metricref" : 1000,
+            "Routers" : [8,9,10],
+            "Networks" : {
+                "2001:100:600:1::/64" : {
+                    "8" : "GigabitEthernet1/0",
+                    "9" : "GigabitEthernet1/0"
+                },
+                "2001:100:600:2::/64" : {
+                    "8" : "GigabitEthernet2/0",
+                    "10" : "GigabitEthernet2/0"
+                },
+                "2001:100:600:3::/64" : {
+                    "9" : "FastEthernet0/0",
+                    "10" : "FastEthernet0/0"
+                }
+            }
+
+        }
+    },
+
+    "Inter-AS" : {
+        "2001:200:100:100::/64" : {
+            "1" : ["GigabitEthernet2/0", 1, "2001:200:100:100::1/64", 2, 30],
+            "2" : ["GigabitEthernet2/0", 2, "2001:200:100:100::2/64", 1, 80]
+        },
+        "2001:200:100:200::/64" : {
+            "1" : ["FastEthernet0/0", 1, "2001:200:100:200::1/64", 3, 30],
+            "3" : ["FastEthernet0/0", 3, "2001:200:100:200::2/64", 1, 80]
+        },
+        "2001:200:100:300::/64" : {
+            "2" : ["GigabitEthernet1/0", 2, "2001:200:100:300::1/64", 4, 30],
+            "4" : ["GigabitEthernet1/0", 4, "2001:200:100:300::2/64", 2, 80]
+        },
+        "2001:200:100:400::/64" : {
+            "3" : ["GigabitEthernet2/0", 3, "2001:200:100:400::1/64", 4, 30],
+            "4" : ["GigabitEthernet2/0", 4, "2001:200:100:400::2/64", 3, 80]
+        },
+        "2001:200:100:500::/64" : {
+            "3" : ["GigabitEthernet1/0", 3, "2001:200:100:500::1/64", 5, 30],
+            "5" : ["GigabitEthernet1/0", 5, "2001:200:100:500::2/64", 3, 80]
+        },
+        "2001:200:100:600::/64" : {
+            "4" : ["FastEthernet0/0", 4, "2001:200:100:600::1/64", 6, 30],
+            "8" : ["FastEthernet0/0", 6, "2001:200:100:600::2/64", 4, 80]
+        }
+    },
+    
+    "Path" : {
+        "1" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/902ace2d-161c-43bb-be00-0a95dfe2025a/configs",
+        "2" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/1e767625-57c6-428b-9d5c-145bbc4563a8/configs",
+        "3" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/ff4792fb-7ca9-4637-b562-0c11a441d8d7/configs",
+        "4" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/6592f195-3883-4b3e-9d18-8680ad9effb2/configs",
+        "5" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/ae941880-8f1b-44e7-9848-beede453c985/configs",
+        "6" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/a7ee6b36-1b74-4789-b9a7-af93fe71d340/configs",
+        "7" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/cd753a46-f147-47fa-8bea-2dbb966c5477/configs",
+        "8" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/649f6b52-d6da-4200-bbde-fea900ab9269/configs",
+        "9" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/eb4fbf69-57e0-4b53-bb08-b22f35d8b868/configs",
+        "10" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities/project-files/dynamips/bfeec027-8f4a-4992-ac3a-09d37be3348a/configs"
+    }
+}

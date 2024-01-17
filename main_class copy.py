@@ -1,8 +1,6 @@
 import json 
-import telnetlib
-import time
 
- 
+
 class Config() :
     
     def __init__(self, file1, file2) :
@@ -26,10 +24,10 @@ class Config() :
         #Création des adresses iBGP  
         for AS in self.AS_dic.values() :
 
+            
             for Router_list in AS["Routers"] :          
                 Router = Router_list[0]
                 name = f"{Router}"
-                
                 info = self.copy_dict()
                 
                 for network_name, network_dic in AS["Networks"].items() : 
@@ -46,7 +44,6 @@ class Config() :
                     
                 info["IGP"] = AS["IGP"]
                 info["AS"] = [AS["n°"], Router]
-                info["Port"]=router_list[1]
                 address = self.addressing(f"10:10:10:{hex(Router).split('x')[1]}::/64", Router)
                 if address != "err" :
                     info["Interfaces"]["Loopback0"] = address                 
@@ -80,10 +77,10 @@ class Config() :
                         
                         if Router_peer != Router :
                             self.dict_info[Router]["neighbor"].append([network_dic[Router_peer][2], network_dic[Router_peer][1], network_dic[Router][4], Router_peer])
-
+                      
+                      
+                            
     def write_config(self, temp, router):
-
-
 
         #Initialisation des variables
         IP_addresses = self.dict_info[f'{router}']['Interfaces']
@@ -95,7 +92,6 @@ class Config() :
         #Sélection de l'IGP
         if self.dict_info[f'{router}']['IGP'] == "RIP" :
             process = "rip 200 enable"
-            config = config.split("[OSPFband]")[0] + config.split("[OSPFband]")[1]
             config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
         else :
             process = f"ospf 100 area 0"
@@ -113,11 +109,9 @@ class Config() :
             if "Gigabit" in Interface :
                 Special = "\n negotiation auto"
                 BandW = "1000000"
-                
             elif "Fast" in Interface :
                 Special = "\n duplex full"
                 BandW = "100000"
-
             else :
                 Special = ""
                 
@@ -225,149 +219,19 @@ class Config() :
         "AS" : [],
         "neighbor" : [],
         "network" : [],
-        "eBGP_interface" : [],
-        "Port" : []
+        "eBGP_interface" : []
         }
         
        
         
     def write_files(self) :
         for Router in self.dict_info.keys() :
-            #f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
-            
-            #f.write(self.write_config(self.template, int(Router)))
-            print((self.write_config(self.template, int(Router))))
-            #f.close()
+            f = open(f"{self.path[Router]}/i{Router}_startup-config.cfg", "w")
+            f.write(self.write_config(self.template, int(Router)))
+            f.close()
                    
-    def Telnet(self):
-        for Router, dico in self.dict_info.items() :
-            telnet_connexion = telnetlib.Telnet("localhost",dico["Port"]) #ajouter le port dans le dico
-            if dico["IGP"] == "RIP":
-                #config rip
-                
-                telnet_connexion.write(b"enable\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(b"configure terminal\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(b"ipv6 unicast-routing\r\n")
-                time.sleep(0.01)
-                for interface, address in dico["Interfaces"].items():
-                    telnet_connexion.write(bytes(f"interface {interface}\r\n", "utf-8"))
-                    time.sleep(0.01)
-                    telnet_connexion.write(b"ipv6 enable\r\n")
-                    time.sleep(0.01)
-                    telnet_connexion.write(bytes(f"ipv6 address {address}\r\n", "utf-8"))
-                    time.sleep(0.01)
-                    telnet_connexion.write(b"no shutdown\r\n")
-                    time.sleep(0.01)
-                    if interface not in dico["eBGP_interface"]:
-                        telnet_connexion.write(b"ipv6 router rip ripprocess\r\n")
-                        time.sleep(0.01)
-                        telnet_connexion.write(b"redistribute connected\r\n")
-                        time.sleep(0.01)
-                    telnet_connexion.write(b"exit\r\n")
-                    time.sleep(0.01)
-                    if interface not in dico["eBGP_interface"]:
-                        telnet_connexion.write(bytes(f"interface {interface}\r\n","utf-8"))
-                        time.sleep(0.01)
-                        telnet_connexion.write(b"ipv6 rip ripprocess enable\r\n")
-                        time.sleep(0.01)
-                        telnet_connexion.write(b"exit\r\n")
-                        time.sleep(0.01)
-                telnet_connexion.write(b"end\r\n")       
-
-            if dico["IGP"] == "OSPF":
-                #config ospf
-                
-                telnet_connexion.write(b"enable\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(b"configure terminal\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(b"ipv6 unicast-routing\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(bytes(f"ipv6 router ospf {Router}\r\n","utf-8"))   
-                time.sleep(0.01)
-                telnet_connexion.write(bytes(f"router-id {Router}.{Router}.{Router}.{Router}\r\n", "utf-8"))  
-                time.sleep(0.01) 
-
-                telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
-                for interface, address in dico["Interfaces"].items():
-                    telnet_connexion.write(bytes(f"interface {interface}\r\n", "utf-8"))
-                    time.sleep(0.01)
-                    telnet_connexion.write(b"ipv6 enable\r\n")
-                    time.sleep(0.01)
-                    telnet_connexion.write(bytes(f"ipv6 address {address}\r\n", "utf-8"))
-                    time.sleep(0.01)
-                    telnet_connexion.write(b"no shutdown\r\n")
-                    time.sleep(0.01)
-                    telnet_connexion.write(bytes(f"ipv6 ospf {Router} area 0\r\n","utf-8"))   
-                    time.sleep(0.01)    
-                    telnet_connexion.write(b"exit\r\n")
-                    time.sleep(0.01)
-                    
-
-                    if interface in dico["eBGP_interface"]:
-                        telnet_connexion.write(bytes(f"ipv6 router ospf {Router}\r\n","utf-8"))   
-                        time.sleep(0.01)
-                        telnet_connexion.write(bytes(f"passive-interface {interface}\r\n","utf-8"))
-                        time.sleep(0.01)
-                telnet_connexion.write(b"end\r\n")
-                time.sleep(0.01)
             
-            telnet_connexion.write(b"conf t\r\n")   
-            time.sleep(0.01)
-            telnet_connexion.write(bytes(f"router bgp {dico['AS'][0]}\r\n","utf-8"))
-            time.sleep(0.01)
-            telnet_connexion.write(b"no bgp default ipv4-unicast\r\n")
-            time.sleep(0.01)
-            telnet_connexion.write(bytes(f"bgp router-id {Router}.{Router}.{Router}.{Router}\r\n","utf-8")) 
-            time.sleep(0.01)
-            for neighbor_address, neighbor_AS in dico["neighbor"]:
-                telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} remote-as {neighbor_AS}\r\n","utf-8")) 
-                time.sleep(0.01)
-                if dico["AS"][0]==neighbor_AS:
-                    telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} update-source Loopback0\r\n","utf-8")) 
-                    time.sleep(0.01)
-                
-
-                telnet_connexion.write(b"address-family ipv6 unicast\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} activate\r\n","utf-8")) 
-                time.sleep(0.01)
-                telnet_connexion.write(b"exit\r\n")
-                time.sleep(0.01)
-            for net in dico["network"]:
-                telnet_connexion.write(b"address-family ipv6 unicast\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(bytes(f"network {net}\r\n","utf-8")) 
-                time.sleep(0.01)
-                telnet_connexion.write(b"end\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(b"conf t\r\n")
-                time.sleep(0.01)
-                telnet_connexion.write(bytes(f"ipv6 route {net} Null0\r\n", 'utf-8'))
-                time.sleep(0.01)
-          
-            if telnet_connexion:
-                telnet_connexion.close()
-            #config BGP
-                 
-
-
-#            if AS["IGP"]=="RIP":
-#                for router in AS["Routeurs"]:
-#                    telnet_connexion = telnetlib.Telnet("localhost",port)
-#                    telnet_connexion.write("test")
-                    
-#            if AS["IGP"]=="OSPF":
-#                for router in AS["Routeurs"]:
-#                    telnet_connexion = telnetlib.Telnet("localhost",port)
-#                    telnet_connexion.write("test")
-        
-
             
 config = Config('config_5.json', "template_loop.txt")
 config.build_data()
 config.write_files()
-config.Telnet()
