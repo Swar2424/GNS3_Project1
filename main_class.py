@@ -288,6 +288,8 @@ class Config() :
                 time.sleep(0.01)
                 telnet_connexion.write(bytes(f"router-id {Router}.{Router}.{Router}.{Router}\r\n", "utf-8"))  
                 time.sleep(0.01) 
+                telnet_connexion.write(b"auto-cost reference-bandwidth 1000\r\n")
+                time.sleep(0.01)
 
                 telnet_connexion.write(b"exit\r\n")
                 time.sleep(0.01)
@@ -301,7 +303,15 @@ class Config() :
                     telnet_connexion.write(b"no shutdown\r\n")
                     time.sleep(0.01)
                     telnet_connexion.write(bytes(f"ipv6 ospf {Router} area 0\r\n","utf-8"))   
-                    time.sleep(0.01)    
+                    time.sleep(0.01) 
+                    if "Gigabit" in interface:
+
+                        telnet_connexion.write(b"bandwidth 1000000\r\n")
+                        time.sleep(0.01)
+                    elif "Fast" in interface:
+                        telnet_connexion.write(b"bandwidth 100000\r\n")
+                        time.sleep(0.01)
+                    
                     telnet_connexion.write(b"exit\r\n")
                     time.sleep(0.01)
                     
@@ -311,6 +321,7 @@ class Config() :
                         time.sleep(0.01)
                         telnet_connexion.write(bytes(f"passive-interface {interface}\r\n","utf-8"))
                         time.sleep(0.01)
+                        
                 telnet_connexion.write(b"end\r\n")
                 time.sleep(0.01)
             
@@ -325,6 +336,7 @@ class Config() :
             for list_neighbor in dico["neighbor"]:
                 neighbor_address = list_neighbor[0]
                 neighbor_AS = list_neighbor[1]
+                print(neighbor_address, neighbor_AS, dico["AS"])
                 telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} remote-as {neighbor_AS}\r\n","utf-8")) 
                 time.sleep(0.01)
                 if dico["AS"][0]==neighbor_AS:
@@ -338,8 +350,6 @@ class Config() :
                 
                 if dico["AS"][0]!=neighbor_AS:
                     Type = list_neighbor[2]
-                    telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} update-source Loopback0\r\n","utf-8")) 
-                    time.sleep(0.01)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map {Type}-map in\r\n","utf-8")) 
                     time.sleep(0.01)
                     telnet_connexion.write(bytes(f"neighbor {neighbor_address[:-3]} route-map {Type}-map-out out\r\n","utf-8")) 
