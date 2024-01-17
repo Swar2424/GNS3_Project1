@@ -168,11 +168,8 @@ class Config() :
         if self.dict_info[f'{router}']['network'] != [] :        
             network = self.dict_info[f'{router}']['network'][0]
             
-            char_net = f"  network {network} route-map Client-map\n"
-            for interface in self.dict_info[f'{router}']['Interfaces'] :                                            #
-                if interface not in self.dict_info[f'{router}']["eBGP_interface"] and interface != 'Loopback0':     #   Solution TEMPORAIRE
-                    inter_route = interface                                                                         #
-            char_route = f"\nipv6 route {network} {inter_route}"                                                    #
+            char_net = f"  network {network} route-map Client-map\n"                                                                     #
+            char_route = f"\nipv6 route {network} Null0"                                                    #
             
             char_net = char_net[2:]
             config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]

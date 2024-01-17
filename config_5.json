@@ -4,10 +4,11 @@
             "Prefix" : "2001:100:100::/48",
             "n°" : 1,
             "IGP" : "RIP",
-            "Routers" : [1],
+            "Routers" : [1, 8],
             "Networks" : {
                 "2001:100:100:1::/64" : {
-                    "1" : "FastEthernet0/0"
+                    "1" : "FastEthernet0/0",
+                    "8" : "FastEthernet0/0"
                 }
             }
         },
@@ -16,10 +17,11 @@
             "n°" : 2,
             "IGP" : "RIP",
             "Metricref" : 1000,
-            "Routers" : [2],
+            "Routers" : [2,9],
             "Networks" : {
                 "2001:100:200:1::/64" : {
-                    "2" : "FastEthernet0/0"
+                    "2" : "FastEthernet0/0",
+                    "9" : "FastEthernet0/0"
                 }
             }
         },
@@ -27,10 +29,11 @@
             "Prefix" : "2001:100:300::/48",
             "n°" : 3,
             "IGP" : "RIP",
-            "Routers" : [3],
+            "Routers" : [3, 10],
             "Networks" : {
                 "2001:100:300:1::/64" : {
-                    "3" : "FastEthernet0/0"
+                    "3" : "FastEthernet0/0",
+                    "10" : "FastEthernet0/0"
                 }
             }
         },
@@ -38,10 +41,11 @@
             "Prefix" : "2001:100:400::/48",
             "n°" : 4,
             "IGP" : "RIP",
-            "Routers" : [4],
+            "Routers" : [4, 11],
             "Networks" : {
                 "2001:100:400:1::/64" : {
-                    "4" : "FastEthernet0/0"
+                    "4" : "FastEthernet0/0",
+                    "11" : "FastEthernet0/0"
                 }
             }
         },
@@ -49,10 +53,11 @@
             "Prefix" : "2001:100:500::/48",
             "n°" : 5,
             "IGP" : "RIP",
-            "Routers" : [5],
+            "Routers" : [5, 12],
             "Networks" : {
                 "2001:100:500:1::/64" : {
-                    "5" : "FastEthernet0/0"
+                    "5" : "GigabitEthernet2/0",
+                    "12" : "GigabitEthernet2/0"
                 }
             }
         },
@@ -60,10 +65,11 @@
             "Prefix" : "2001:100:600::/48",
             "n°" : 6,
             "IGP" : "RIP",
-            "Routers" : [6],
+            "Routers" : [6, 13],
             "Networks" : {
                 "2001:100:600:1::/64" : {
-                    "6" : "FastEthernet0/0"
+                    "6" : "GigabitEthernet1/0",
+                    "13" : "GigabitEthernet1/0"
                 }
             }
         },
@@ -71,22 +77,11 @@
             "Prefix" : "2001:100:700::/48",
             "n°" : 7,
             "IGP" : "RIP",
-            "Routers" : [7],
+            "Routers" : [7, 14],
             "Networks" : {
                 "2001:100:700:1::/64" : {
-                    "7" : "FastEthernet0/0"
-                }
-            }
-        },
-        "As_8": {
-            "Prefix" : "2001:100:800::/48",
-            "n°" : 8,
-            "IGP" : "RIP",
-            "Routers" : [8, 9],
-            "Networks" : {
-                "2001:100:800:1::/64" : {
-                    "8" : "FastEthernet0/0",
-                    "9" : "FastEthernet0/0"
+                    "7" : "GigabitEthernet2/0",
+                    "14" : "GigabitEthernet2/0"
                 }
             }
         }
@@ -122,12 +117,8 @@
             "5" : ["GigabitEthernet1/0", 5, "2001:200:100:700::2/64", 2, "Provider"]
         },
         "2001:200:100:800::/64" : {
-            "2" : ["GigabitEthernet4/0", 2, "2001:200:100:800::1/64", 7, "Client"],
-            "7" : ["GigabitEthernet2/0", 7, "2001:200:100:800::2/64", 2, "Provider"]
-        },
-        "2001:200:100:900::/64" : {
-            "4" : ["GigabitEthernet1/0", 4, "2001:200:100:900::1/64", 8, "Client"],
-            "8" : ["GigabitEthernet1/0", 8, "2001:200:100:900::2/64", 4, "Provider"]
+            "4" : ["GigabitEthernet1/0", 4, "2001:200:100:800::1/64", 7, "Client"],
+            "7" : ["GigabitEthernet1/0", 7, "2001:200:100:800::2/64", 4, "Provider"]
         }
     },
     
@@ -140,6 +131,11 @@
         "6" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/ffb55537-a54b-4c4d-84bb-36a0412c2a7b/configs",
         "7" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/6a663227-a38d-4140-baa4-994c4a35937a/configs",
         "8" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/00e2e479-3253-4851-baba-61aee3e770b5/configs",
-        "9" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/49f6aeb7-494e-4e45-a2aa-3f9f7aa60642/configs"
+        "9" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/49f6aeb7-494e-4e45-a2aa-3f9f7aa60642/configs",
+        "10" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/8959e196-4b5f-499f-aca2-beaa84458c4d/configs",
+        "11" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/6c3e4523-e4e9-4b4a-9c8d-4680f5f4024e/configs",
+        "12" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/05ee275d-6387-4ed7-90e4-99c15ca51944/configs",
+        "13" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/5ab7d513-e3c4-4a5a-ac68-f860fb6fa1e0/configs",
+        "14" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/e7d32183-f763-4667-a48e-33bfbc0ea1c4/configs"
     }
 }
