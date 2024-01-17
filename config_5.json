@@ -15,6 +15,7 @@
             "Prefix" : "2001:100:200::/48",
             "n°" : 2,
             "IGP" : "RIP",
+            "Metricref" : 1000,
             "Routers" : [2],
             "Networks" : {
                 "2001:100:200:1::/64" : {
@@ -81,10 +82,11 @@
             "Prefix" : "2001:100:800::/48",
             "n°" : 8,
             "IGP" : "RIP",
-            "Routers" : [8],
+            "Routers" : [8, 9],
             "Networks" : {
                 "2001:100:800:1::/64" : {
-                    "8" : "FastEthernet0/0"
+                    "8" : "FastEthernet0/0",
+                    "9" : "FastEthernet0/0"
                 }
             }
         }
@@ -136,7 +138,8 @@
         "4" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/50cb5045-fa78-4aa9-9d3e-5323ff222ef5/configs",
         "5" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/80cdebda-2ebb-4327-bf81-8f29cb8ba44d/configs",
         "6" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/ffb55537-a54b-4c4d-84bb-36a0412c2a7b/configs",
-        "7" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/9de7e2c8-6824-4b88-94a8-c85d8514c3a4/configs",
-        "8" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/00e2e479-3253-4851-baba-61aee3e770b5/configs"
+        "7" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/6a663227-a38d-4140-baa4-994c4a35937a/configs",
+        "8" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/00e2e479-3253-4851-baba-61aee3e770b5/configs",
+        "9" : "C:/Users/felix/GNS3/projects/GNS3_Project_Communities_2/project-files/dynamips/49f6aeb7-494e-4e45-a2aa-3f9f7aa60642/configs"
     }
 }

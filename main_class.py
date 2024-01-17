@@ -55,7 +55,7 @@ class Config() :
 
             for Router, Connect in network_dic.items() :
                 self.dict_info[Router]["Interfaces"][Connect[0]] = Connect[2]
-                self.dict_info[Router]["eBGP_interface"] = Connect[0] 
+                self.dict_info[Router]["eBGP_interface"].append(Connect[0]) 
                 self.dict_info[Router]["network"].append(self.AS_dic[f"As_{Connect[1]}"]["Prefix"])
 
 
@@ -113,7 +113,7 @@ class Config() :
             else :
                 Special = ""
                 
-            if ((Interface not in self.dict_info[f'{router}']['eBGP_interface']) or (self.dict_info[f'{router}']['IGP'] == "RIP")) :
+            if self.dict_info[f'{router}']['IGP'] == "RIP" :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
             else :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n bandwidth {BandW} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
@@ -127,26 +127,27 @@ class Config() :
         char_activate = ""
         char_community = ""
         char_route_map = ""
-        if self.dict_info[f'{router}']['eBGP_interface'] != [] :
+        
+        if self.dict_info[f'{router}']['eBGP_interface'] != [] :     # si le routeur a des connections eBGP -> implémentation des commmunities
             char_community += "\nip community-list 1 permit 10\nip community-list 1 permit 20\nip community-list 1 permit 30"
             char_community += "\nip community-list 2 permit 10\nip community-list 2 deny 20\nip community-list 2 deny 30"
             char_community += "\nip community-list 3 permit 10\nip community-list 3 deny 20\nip community-list 3 deny 30"
             char_route_map += "\nroute-map Client-map-out permit 100\n match community 1\n!"
             char_route_map += "\nroute-map Peer-map-out permit 100\n match community 2\n!"
             char_route_map += "\nroute-map Provider-map-out permit 100\n match community 3\n!"
-            char_route_map += "\nroute-map Client-map permit 100\n set community 10\n!"
-            char_route_map += "\nroute-map Peer-map permit 100\n set community 20\n!"
-            char_route_map += "\nroute-map Provider-map permit 100\n set community 30\n!"
+            char_route_map += "\nroute-map Client-map permit 100\n set community 10\n set weight 300\n!"
+            char_route_map += "\nroute-map Peer-map permit 100\n set community 20\n set weight 200\n!"
+            char_route_map += "\nroute-map Provider-map permit 100\n set community 30\n set weight 100\n!"
         
-        for neighbor_list in self.dict_info[f'{router}']['neighbor'] :
+        for neighbor_list in self.dict_info[f'{router}']['neighbor'] :  # on prend toutes les addresses entrées comme neighbors
             neighbor_tronque = neighbor_list[0].split("/")[0]
             char_neighbor += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
             char_activate += f"  neighbor {neighbor_tronque} activate\n"
             
-            if neighbor_list[0][:9] == "10:10:10:" :
+            if neighbor_list[0][:9] == "10:10:10:" :    # si le neighbor est une interface loopback -> source des connections iBGP
                 char_neighbor += f"neighbor {neighbor_tronque} update-source Loopback0\n "
             
-            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :
+            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :   #si le neighbor est dans une autre AS -> eBGP
                 Type = neighbor_list[2]
        
                 char_activate += f"  neighbor {neighbor_tronque} route-map {Type}-map in\n"
@@ -168,7 +169,10 @@ class Config() :
             network = self.dict_info[f'{router}']['network'][0]
             
             char_net = f"  network {network} route-map Client-map\n"
-            char_route = f"\nipv6 route {network} Null0"
+            for interface in self.dict_info[f'{router}']['Interfaces'] :                                            #
+                if interface not in self.dict_info[f'{router}']["eBGP_interface"] and interface != 'Loopback0':     #   Solution TEMPORAIRE
+                    inter_route = interface                                                                         #
+            char_route = f"\nipv6 route {network} {inter_route}"                                                    #
             
             char_net = char_net[2:]
             config = config.split("[network]")[0] + char_net + char_activate + config.split("[network]")[1]
