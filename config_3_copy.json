@@ -1,0 +1,64 @@
+{
+    "AS_dic": {
+        "As_1": {
+            "Prefix" : [1, "2001:1:1::/48"],
+            "n°" : 1,
+            "IGP" : "RIP",                                        
+            "Routers" : [[1, 5014],[2, 5015],[3, 5016]],
+            "Networks" : {
+                "2001:1:1:1::/64" : {
+                    "1" : "GigabitEthernet1/0",
+                    "2" : "GigabitEthernet1/0"
+                    
+                },
+                "2001:1:1:2::/64" : {
+                    "2" : "GigabitEthernet2/0",
+                    "3" : "GigabitEthernet1/0"
+                }
+
+            }
+        },
+        "As_2": {
+            "Prefix" : [14, "2001:1:2::/48"],
+            "n°" : 2,
+            "IGP" : "OSPF",
+            "Metricref" : 1000000,                 
+            "Routers" : [[4, 5017],[5, 5018],[6, 5019]],
+            "Networks" : {
+                "2001:1:2:1::/64" : {
+                    "4" : "GigabitEthernet1/0",
+                    "5" : "GigabitEthernet1/0"
+                },
+                "2001:1:2:2::/64" : {
+                    "5" : "GigabitEthernet2/0",
+                    "6" : "GigabitEthernet1/0"
+                }
+            }
+
+        }
+    },
+
+    "Inter-AS" : {
+        "2001:2:1:1::/64" : {
+            "3" : ["GigabitEthernet2/0", 1, "2001:2:1:1::1/64", 2, 30],
+            "4" : ["GigabitEthernet2/0", 2, "2001:2:1:1::2/64", 1, 80]
+        }
+    },
+    
+    "Path" : {
+        "1" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/93344125-5f37-44a2-a3bc-8e8fa929f88a/configs",
+        "2" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/7d75b8c4-2d71-4eff-b3b2-0e08b20859b4/configs",
+        "3" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/b399c5db-cd62-4b49-97b0-d1e78c9ac0c0/configs",
+        "4" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/df8661ca-a6e7-4cfe-8be3-43758a45e528/configs",
+        "5" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/00364bcb-2bba-42f3-9f71-644293a85384/configs",
+        "6" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/99353ebf-ae81-4dff-9bfa-63f91a1054e7/configs",
+        "7" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/c3a148d1-af91-4a95-bf44-ae97ba120feb/configs",
+        "8" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/b96d83ab-09e6-4f38-8819-17a09ea935c8/configs",
+        "9" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/21ead2b7-4c5a-44a5-b0af-fdb7e86a0ff7/configs",
+        "10" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/b6be63df-8fc5-4940-a9ac-1d2ed8a61e84/configs",
+        "11" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/6bd1e12b-e207-4524-bb58-da5e5424ace4/configs",
+        "12" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/483115db-d00b-418a-b568-8eb75ce21bf3/configs",
+        "13" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/fc6e19a6-4245-4875-854f-a5dcedc8d32e/configs",
+        "14" : "C:/Users/felix/GNS3/projects/GNS3_14Routers/project-files/dynamips/46475482-db31-4da0-ae48-c9a2b7439985/configs"
+    }
+}
