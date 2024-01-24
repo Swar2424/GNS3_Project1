@@ -65,7 +65,23 @@
             "Prefix" : "2001:100:600::/48",
             "n°" : 6,
             "IGP" : "OSPF",
-            "Metricref" : 1000,
+            "Metric_val" : {
+                "8" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                },
+                "9" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                }, 
+                "10" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                }
+            }, 
             "Routers" : [[8, 5007], [9, 5008], [10, 5009]],
             "Networks" : {
                 "2001:100:600:1::/64" : {

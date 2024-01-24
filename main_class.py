@@ -1,6 +1,7 @@
 import json 
 import telnetlib
 import time
+from threading import Thread
 
  
 class Config() :
@@ -45,6 +46,10 @@ class Config() :
 
                     
                 info["IGP"] = AS["IGP"]
+                
+                if AS["IGP"] == "OSPF" :
+                    info["OSPF"] = AS["Metric_val"][f'{Router}']
+                
                 info["AS"] = [AS["n°"], Router]
                 info["Port"]=Router_list[1]
                 address = self.addressing(f"10:10:10:{hex(Router).split('x')[1]}::/64", Router)
@@ -98,11 +103,10 @@ class Config() :
             config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
         else :
             process = f"ospf 100 area 0"
-            char_metric = f'\n auto-cost reference-bandwidth {self.AS_dic["As_2"]["Metricref"]}'
             char_temp = ""
             for interface in self.dict_info[f'{router}']['eBGP_interface']  :
                 char_temp = f"\n passive-interface {interface}"
-            config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + char_metric + config.split("[IGP]")[1]
+            config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + config.split("[IGP]")[1]
         
         
         #Attributions des adresses sur les interfaces
@@ -111,19 +115,19 @@ class Config() :
             
             if "Gigabit" in Interface :
                 Special = "\n negotiation auto"
-                BandW = "1000000"
                 
             elif "Fast" in Interface :
                 Special = "\n duplex full"
-                BandW = "100000"
 
             else :
                 Special = ""
                 
             if self.dict_info[f'{router}']['IGP'] == "RIP" and Interface in self.dict_info[f'{router}']["eBGP_interface"] :
                 interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n!\n"
+            elif self.dict_info[f'{router}']['IGP'] == "OSPF" and "Loopback" not in Interface :
+                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 ospf cost {self.dict_info[f'{router}']['OSPF'][Interface]} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
             else :
-                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n bandwidth {BandW} \n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
+                interfaces_txt += f"interface {Interface}\n no ip address{Special}\n ipv6 address {Address}\n ipv6 enable\n ipv6 {process}\n!\n"
         
         config = config.split("[Interfaces]\n")[0] + interfaces_txt + config.split("[Interfaces]\n")[1]
         config = config.split("[AS]")[0] + f"{numAS}\n" + f" bgp router-id {router}.{router}.{router}.{router}" + config.split("[AS]")[1]
@@ -239,9 +243,14 @@ class Config() :
                    
                    
                    
-    def Telnet(self):
+    def Launch_Telnet(self):
         
         for Router, dico in self.dict_info.items() :
+            t = Thread(target = self.Telnet, args = (Router, dico))
+            t.start()
+            
+    
+    def Telnet(self, Router, dico):
             telnet_connexion = telnetlib.Telnet("localhost",dico["Port"]) #ajouter le port dans le dico
             
             if dico["IGP"] == "RIP":
@@ -293,8 +302,6 @@ class Config() :
                 telnet_connexion.write(bytes(f"ipv6 router ospf {Router}\r\n","utf-8"))   
                 time.sleep(0.05)
                 telnet_connexion.write(bytes(f"router-id {Router}.{Router}.{Router}.{Router}\r\n", "utf-8"))  
-                time.sleep(0.05) 
-                telnet_connexion.write(b"auto-cost reference-bandwidth 1000\r\n")
                 time.sleep(0.05)
                 telnet_connexion.write(b"exit\r\n")
                 time.sleep(0.05)
@@ -310,12 +317,9 @@ class Config() :
                     time.sleep(0.05)
                     telnet_connexion.write(bytes(f"ipv6 ospf {Router} area 0\r\n","utf-8"))   
                     time.sleep(0.05) 
-                    if "Gigabit" in interface:
-                        telnet_connexion.write(b"bandwidth 1000000\r\n")
-                        time.sleep(0.05)
-                        
-                    elif "Fast" in interface:
-                        telnet_connexion.write(b"bandwidth 100000\r\n")
+                    
+                    if interface in dico["OSPF"].keys():
+                        telnet_connexion.write(bytes(f"ipv6 ospf cost {dico['OSPF'][interface]}\r\n","utf-8"))
                         time.sleep(0.05)
                     
                     telnet_connexion.write(b"exit\r\n")
@@ -493,4 +497,4 @@ class Config() :
 config = Config('config_5.json', "template_loop.txt")
 config.build_data()
 config.write_files()
-config.Telnet()
+config.Launch_Telnet()

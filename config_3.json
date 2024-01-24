@@ -58,7 +58,47 @@
             "Prefix" : "2001:1:2::/48",
             "n°" : 2,
             "IGP" : "OSPF",
-            "Metricref" : 1000,
+            "Metric_val" : {
+                "8" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "GigabitEthernet3/0" : 3,
+                    "FastEthernet0/0" : 10
+                },
+                "9" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "GigabitEthernet3/0" : 3,
+                    "FastEthernet0/0" : 10
+                }, 
+                "10" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "GigabitEthernet3/0" : 3,
+                    "FastEthernet0/0" : 10
+                }, 
+                "11" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "GigabitEthernet3/0" : 3,
+                    "FastEthernet0/0" : 10
+                }, 
+                "12" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                }, 
+                "13" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                }, 
+                "14" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2,
+                    "FastEthernet0/0" : 10
+                }
+            },
             "Routers" : [[8, 5007],[9, 5008],[10, 5009],[11, 5010],[12,5011],[13, 5012],[14, 5013]],
             "Networks" : {
                 "2001:1:2:1::/64" : {

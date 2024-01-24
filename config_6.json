@@ -22,7 +22,20 @@
             "Prefix" : "2001:1:2::/48",
             "n°" : 2,
             "IGP" : "OSPF",
-            "Metricref" : 1000000,                 
+            "Metric_val" : {
+                "4" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2
+                },
+                "5" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2
+                }, 
+                "6" : {
+                    "GigabitEthernet1/0" : 1,
+                    "GigabitEthernet2/0" : 2
+                }
+            },         
             "Routers" : [[4, 5017],[5, 5018],[6, 5019]],
             "Networks" : {
                 "2001:1:2:1::/64" : {
