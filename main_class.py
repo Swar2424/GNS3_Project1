@@ -143,6 +143,7 @@ class Config() :
             char_community += "\nip community-list 1 permit 10\nip community-list 1 permit 20\nip community-list 1 permit 30"
             char_community += "\nip community-list 2 permit 10\nip community-list 2 deny 20\nip community-list 2 deny 30"
             char_community += "\nip community-list 3 permit 10\nip community-list 3 deny 20\nip community-list 3 deny 30"
+            char_community += "\nip community-list 4 permit 10\nip community-list 5 permit 20\nip community-list 6 permit 30"
             char_route_map += "\nroute-map Client-map-out permit 100\n match community 1\n!"
             char_route_map += "\nroute-map Peer-map-out permit 100\n match community 2\n!"
             char_route_map += "\nroute-map Provider-map-out permit 100\n match community 3\n!"
@@ -150,9 +151,9 @@ class Config() :
             char_route_map += "\nroute-map Client-map permit 100\n set community 10\n set local-preference 400\n!"
             char_route_map += "\nroute-map Peer-map permit 100\n set community 20\n set local-preference 300\n!"
             char_route_map += "\nroute-map Provider-map permit 100\n set community 30\n set local-preference 200\n!"
-            char_route_map += "\nroute-map iBGP-map permit 100\n match community 1\n set local-preference 400\n!"
-            char_route_map += "\nroute-map iBGP-map permit 200\n match community 2\n set local-preference 300\n!"
-            char_route_map += "\nroute-map iBGP-map permit 300\n match community 3\n set local-preference 200\n!"
+            char_route_map += "\nroute-map iBGP-map permit 100\n match community 4\n set local-preference 400\n!"
+            char_route_map += "\nroute-map iBGP-map permit 200\n match community 5\n set local-preference 300\n!"
+            char_route_map += "\nroute-map iBGP-map permit 300\n match community 6\n set local-preference 200\n!"
         
         for neighbor_list in self.dict_info[f'{router}']['neighbor'] :  # on prend toutes les addresses entrées comme neighbors
             neighbor_tronque = neighbor_list[0].split("/")[0]
@@ -494,7 +495,7 @@ class Config() :
                  
         
      
-config = Config('config_5.json', "template_loop.txt")
+config = Config('config_3.json', "template_loop.txt")
 config.build_data()
 config.write_files()
 config.Launch_Telnet()
