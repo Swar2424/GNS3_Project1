@@ -21,10 +21,10 @@ class Config() :
         self.dict_info = {}
         
         
-        
+    #Création des adresses iBGP, eBGP et récupération des neighbors
     def build_data(self) :  
           
-        #Création des adresses iBGP  
+        
         for AS in self.AS_dic.values() :
 
             for Router_list in AS["Routers"] :          
@@ -59,7 +59,7 @@ class Config() :
                 self.dict_info[name] = info
 
 
-        #Création des adresses eBGP  
+        
         for network_name, network_dic in self.Inter_AS.items() :
 
             for Router, Connect in network_dic.items() :
@@ -68,7 +68,7 @@ class Config() :
                 self.dict_info[Router]["network"].append(self.AS_dic[f"As_{Connect[1]}"]["Prefix"])
 
 
-        #Récupération des neighbors
+        
         for Router in self.dict_info.keys() :
             
             for Router_peer_list in self.AS_dic[f"As_{self.dict_info[Router]['AS'][0]}"]["Routers"] :
@@ -86,18 +86,18 @@ class Config() :
                         if Router_peer != Router :
                             self.dict_info[Router]["neighbor"].append([network_dic[Router_peer][2], network_dic[Router_peer][1], network_dic[Router][4], Router_peer])
 
+    #Initialisation des variables, sélection de l'IGP, attributions des adresses sur les interfaces, attribution des neighbors et des networks, implémentation des commmunities si connexions eBGP
     def write_config(self, temp, router):
 
 
 
-        #Initialisation des variables
         IP_addresses = self.dict_info[f'{router}']['Interfaces']
 
         numAS = self.dict_info[f'{router}']['AS'][0]
         config = temp
         
         
-        #Sélection de l'IGP
+        
         if self.dict_info[f'{router}']['IGP'] == "RIP" :
             process = "rip 200 enable"
             config = config.split("[IGP]")[0] + "rip 200" + "\n redistribute connected" + config.split("[IGP]")[1]
@@ -109,7 +109,7 @@ class Config() :
             config = config.split("[IGP]")[0] + "ospf 100" + f"\n router-id {router}.{router}.{router}.{router}" + char_temp + config.split("[IGP]")[1]
         
         
-        #Attributions des adresses sur les interfaces
+        
         interfaces_txt = ""
         for Interface, Address in IP_addresses.items() :
             
@@ -133,13 +133,13 @@ class Config() :
         config = config.split("[AS]")[0] + f"{numAS}\n" + f" bgp router-id {router}.{router}.{router}.{router}" + config.split("[AS]")[1]
         
         
-        #Attribution des neighbors
+        
         char_neighbor = ""
         char_activate = ""
         char_community = ""
         char_route_map = ""
         
-        if self.dict_info[f'{router}']['eBGP_interface'] != [] :     # si le routeur a des connections eBGP -> implémentation des commmunities
+        if self.dict_info[f'{router}']['eBGP_interface'] != [] :    
             char_community += "\nip community-list 1 permit 10\nip community-list 1 permit 20\nip community-list 1 permit 30"
             char_community += "\nip community-list 2 permit 10\nip community-list 2 deny 20\nip community-list 2 deny 30"
             char_community += "\nip community-list 3 permit 10\nip community-list 3 deny 20\nip community-list 3 deny 30"
@@ -155,15 +155,15 @@ class Config() :
             char_route_map += "\nroute-map iBGP-map permit 200\n match community 5\n set local-preference 300\n!"
             char_route_map += "\nroute-map iBGP-map permit 300\n match community 6\n set local-preference 200\n!"
         
-        for neighbor_list in self.dict_info[f'{router}']['neighbor'] :  # on prend toutes les addresses entrées comme neighbors
+        for neighbor_list in self.dict_info[f'{router}']['neighbor'] :  
             neighbor_tronque = neighbor_list[0].split("/")[0]
             char_neighbor += f"neighbor {neighbor_tronque} remote-as {neighbor_list[1]}\n "
             char_activate += f"  neighbor {neighbor_tronque} activate\n"
             
-            if neighbor_list[0][:9] == "10:10:10:" :    # si le neighbor est une interface loopback -> source de la connection iBG sur Loopback0
+            if neighbor_list[0][:9] == "10:10:10:" :   
                 char_neighbor += f"neighbor {neighbor_tronque} update-source Loopback0\n "
             
-            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :   #si le neighbor est dans une autre AS -> eBGP
+            if neighbor_list[1] != self.dict_info[f'{router}']['AS'][0] :  
                 Type = neighbor_list[2]
        
                 char_activate += f"  neighbor {neighbor_tronque} route-map {Type}-map in\n"
@@ -183,7 +183,7 @@ class Config() :
         config = config.split("\n[community]")[0] + char_community + config.split("\n[community]")[1]
         
         
-        #Attribution des networks        
+               
         if self.dict_info[f'{router}']['network'] != [] :        
             network = self.dict_info[f'{router}']['network'][0]
             
@@ -201,16 +201,15 @@ class Config() :
         return(config)
     
     
-    
-    def addressing(self, network, router): #network est une chaine de caractères et router est un int
+    #addressage automatique
+    def addressing(self, network, router): 
         
-        if network not in self.networks.keys():   #on check si il y a déjà une entrée pour ce sous réseau et si non on peut prendre une addresse qu'on veut pour le routeur dans le sous réseau
-            address = network.split("/")[0]+ "1/" + network.split("/")[1]
+        if network not in self.networks.keys():   
             self.networks[network]={}
             
-        else: #le sous-réseau est déjà une entrée dans le dico networks donc il y a déjà au moins une addresse prise dans ce sous réseau
-            nombre_elem= len(self.networks[network].keys()) #on compte le nombre d'addresses déjà prises
-            if nombre_elem>65534: #on vérifie qu'il n'y a pas plus de 65534 addresses dans notre sous-réseau 
+        else: 
+            nombre_elem= len(self.networks[network].keys()) 
+            if nombre_elem>65534: 
                 return "err"
             else:
                 address = network.split("/")[0]+ f"{hex(nombre_elem + 1).split('x')[1]}" + "/" + network.split("/")[1]
@@ -250,12 +249,12 @@ class Config() :
             t = Thread(target = self.Telnet, args = (Router, dico))
             t.start()
             
-    
+    #écriture dans CLI via Telnet
     def Telnet(self, Router, dico):
             telnet_connexion = telnetlib.Telnet("localhost",dico["Port"]) #ajouter le port dans le dico
             
             if dico["IGP"] == "RIP":
-                #config rip
+                
     
                 telnet_connexion.write(b"enable\r\n")
                 time.sleep(0.05)
@@ -292,7 +291,7 @@ class Config() :
                 telnet_connexion.write(b"end\r\n")
 
             if dico["IGP"] == "OSPF":
-                #config ospf
+                
                 
                 telnet_connexion.write(b"enable\r\n")
                 time.sleep(0.05)
@@ -396,7 +395,7 @@ class Config() :
                 telnet_connexion.write(b"config t\r\n")
                 time.sleep(0.05)
                 
-                #création des routes-map et des communities
+                
                 telnet_connexion.write(b"ip community-list 1 permit 10\r\n")
                 time.sleep(0.05)
                 telnet_connexion.write(b"ip community-list 1 permit 20\r\n")
